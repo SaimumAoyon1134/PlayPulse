@@ -1,18 +1,22 @@
+require("dotenv").config({ path: "./local.env" });
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
-const port = 3000;
+
+// load PORT from env if available
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// ------------------ MongoDB Connection ------------------
-const uri =
-  "mongodb+srv://PlayPulse:9DGJgLxxsCcn0YLb@playpulsedb.hjt9ma6.mongodb.net/PlaypulseDB?retryWrites=true&w=majority&appName=PlaypulseDB";
+// ✅ Now this will not be undefined
+const uri = process.env.MONGO_URI;
 
+// ------------------ MongoDB Connection ------------------
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -20,7 +24,6 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
-
 async function run() {
   try {
     await client.connect();
