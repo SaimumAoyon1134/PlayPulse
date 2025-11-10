@@ -1,12 +1,15 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { AuthContext } from "./AuthContext";
 import Post from "./Post";
+import Loading from "./Loading";
+import { useLocation } from "react-router-dom";
+import AnnouncementMarquee from "./AnnouncementMarquee";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("live");
   const modalRef = useRef(null);
-  const { user, setPosts } = useContext(AuthContext);
+  const { user, setPosts ,isLoading} = useContext(AuthContext);
 
   const handlePost = () => {
     if (modalRef.current) {
@@ -14,6 +17,7 @@ const Home = () => {
     }
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const caption = e.target.caption.value;
@@ -53,7 +57,11 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 ">
+      <h1 className=" w-full  text-white mb-5 font-semibold  text-center">
+ <AnnouncementMarquee />
+      </h1>
+
       <div className="w-full flex justify-end mb-4 border-b">
         <button
           onClick={handlePost}

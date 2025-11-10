@@ -46,16 +46,18 @@ const ManageAnnouncement = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-start bg-gradient-to-r from-gray-50 to-gray-100 ">
-
-      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md transition-all duration-300 hover:shadow-2xl mt-6">
+    <div className="w-full min-h-screen flex flex-col items-center justify-start py-2 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100">
+   <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
+        Announcements
+      </h2>
+      <div className="bg-gradient-to-br from-red-200 via-yellow-150 to-green-200 shadow-xl rounded-2xl p-8 w-full max-w-md transition-all duration-300 hover:shadow-2xl mt-6">
         <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
           Manage Announcements
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            className="border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 w-full rounded-xl h-12 px-4 outline-none text-gray-700 transition-all"
+            className="border  focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 w-full rounded-xl h-12 px-4 outline-none text-gray-700 transition-all"
             type="text"
             name="announcement"
             placeholder="Enter your announcement..."

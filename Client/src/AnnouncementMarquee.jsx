@@ -6,7 +6,7 @@ const AnnouncementMarquee = () => {
   if (!announcements || announcements.length === 0) return null;
 
   return (
-    <div className="bg-gray-200 text-red-700 w-full rounded-md shadow-sm">
+    <div className="bg-red-400 text-white w-full  shadow-sm font-extrabold">
       <marquee behavior="scroll" direction="left" scrollamount="6">
         {announcements.map((item) => item.announcement).join(" ⚡  ")}
       </marquee>

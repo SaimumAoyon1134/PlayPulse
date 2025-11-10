@@ -17,34 +17,35 @@ const Post = () => {
 
   // Handle Like
   const handleLike = async (postId) => {
-    const post = posts.find((p) => p._id === postId);
-    const currentUser = user?.displayName || "Anonymous";
+  const currentUser = user?.displayName || "Anonymous";
 
-    if (post.likesUsers?.includes(currentUser)) return; // prevent double like
+  setPosts((prev) =>
+    prev.map((p) => {
+      if (p._id !== postId) return p;
 
-    try {
-      await fetch(`http://localhost:3000/post/${postId}/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user: currentUser }),
-      });
+      const alreadyLiked = p.likesUsers?.includes(currentUser);
+      const updatedLikesUsers = alreadyLiked
+        ? p.likesUsers.filter((u) => u !== currentUser)
+        : [...(p.likesUsers || []), currentUser];
 
-      setPosts((prev) =>
-        prev.map((p) =>
-          p._id === postId
-            ? {
-                ...p,
-                likes: (p.likes || 0) + 1,
-                likesUsers: [...(p.likesUsers || []), currentUser],
-              }
-            : p
-        )
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  };
+      return {
+        ...p,
+        likes: alreadyLiked ? (p.likes || 1) - 1 : (p.likes || 0) + 1,
+        likesUsers: updatedLikesUsers,
+      };
+    })
+  );
 
+  try {
+    await fetch(`http://localhost:3000/post/${postId}/like`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user: currentUser }),
+    });
+  } catch (err) {
+    console.error("Error toggling like:", err);
+  }
+};
   // Handle Comment
   const handleComment = async (e, postId) => {
     e.preventDefault();
@@ -93,10 +94,10 @@ const Post = () => {
         posts.map((post) => (
           <div
             key={post._id}
-            className="border rounded-2xl shadow-md bg-white overflow-hidden"
+            className="border-b border-gray-300 rounded-2xl shadow-md bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 overflow-hidden"
           >
             {/* User Info */}
-            <div className="flex items-center gap-3 p-4 border-b bg-gray-100">
+            <div className="flex items-center gap-3 px-4 py-1 ">
               <img
                 src={post.userPhoto || "https://via.placeholder.com/40"}
                 alt={post.username || "User"}
@@ -113,7 +114,7 @@ const Post = () => {
             </div>
 
             {/* Caption */}
-            <p className="text-gray-700 p-4">{post.caption}</p>
+            <p className="text-gray-700 p-1">{post.caption}</p>
 
             {/* Post Image */}
             {post.img_url && (
@@ -128,20 +129,22 @@ const Post = () => {
             <div className="p-4 space-y-3">
               {/* Like Button with tooltip */}
               <div className="relative group inline-block">
-                <button
-                  onClick={() => handleLike(post._id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${
-                    post.likesUsers?.includes(user?.displayName)
-                      ? "bg-red-100 text-red-600"
-                      : "bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600"
-                  }`}
-                >
-                  <span className="text-lg">❤️</span>
-                  <span className="font-medium">{post.likes || 0}</span>
-                </button>
+               <button
+  onClick={() => handleLike(post._id)}
+  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 ${
+    post.likesUsers?.includes(user?.displayName)
+      ? "text-red-600 scale-105"
+      : "text-gray-600 hover:text-red-500"
+  }`}
+>
+  <span className="text-lg">
+    {post.likesUsers?.includes(user?.displayName) ? "❤️" : "🤍"}
+  </span>
+  <span className="font-medium">{post.likes || 0}</span>
+              </button>
 
                 {/* Tooltip */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-max max-w-xs bg-gray-800 text-white text-xs rounded-md shadow-lg p-2 z-10">
+                <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 ml-15 hidden group-hover:block w-max max-w-xs bg-gray-800 text-white text-xs rounded-md shadow-lg p-2 z-10">
                   {post.likesUsers && post.likesUsers.length > 0 ? (
                     post.likesUsers.map((u, i) => (
                       <span key={i} className="block">• {u}</span>

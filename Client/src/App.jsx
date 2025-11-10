@@ -1,64 +1,63 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import AnnouncementMarquee from "./AnnouncementMarquee";
 import Loading from "./Loading";
+import { AuthContext } from "./AuthContext";
 
 function App() {
   const [activeTab, setActiveTab] = useState("live");
+  const location = useLocation();
+  const [showSpinner, setShowSpinner] = useState(false);
+  const { isLoading } = useContext(AuthContext);
+
+  useEffect(() => {
+    setShowSpinner(true);
+    const timer = setTimeout(() => setShowSpinner(false), );
+    return () => clearTimeout(timer);
+  }, [location]);
+
+  if (isLoading) return <Loading />;
 
   return (
-    <div className="flex flex-col min-h-screen">
- 
+    <div className="flex flex-col min-h-screen ">
+      {showSpinner && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+          <Loading />
+        </div>
+      )}
+
       <div className="sticky top-0 z-50 bg-base-100">
         <Navbar />
-        <AnnouncementMarquee />
+       
       </div>
 
-
-      <div className="flex flex-col md:flex-row gap-6 p-6 min-h-screen bg-gray-50">
-
-        <div className="flex-1 bg-white shadow-md rounded-2xl p-6">
-          <Outlet /> 
+      <div className="flex flex-col md:flex-row gap-6 min-h-screen bg-gray-50">
+        <div className="flex-1 bg-white shadow-md rounded-2xl  ">
+          <Outlet />
         </div>
 
-  
-        <div className="w-full md:w-[30%] bg-white shadow-md rounded-2xl p-6 sticky top-24 h-[90vh] overflow-y-auto">
-          
-          <div className="flex flex-row gap-3 mb-6 border pb-2 shadow-xl shadow-gray-200 bg-gray-100 rounded-2xl p-2">
-            <button
-              onClick={() => setActiveTab("live")}
-              className={`w-full  rounded-lg font-medium transition  ${
-                activeTab === "live"
-                  ? " text-red-400 bg-gray-100 "
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-              }`}
-            >
-              Live
-            </button>
-            <button
-              onClick={() => setActiveTab("recent")}
-              className={`w-full py-2 rounded-lg font-medium transition ${
-                activeTab === "recent"
-                  ? " text-red-400 bg-gray-100"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-              }`}
-            >
-              Recent
-            </button>
-            <button
-              onClick={() => setActiveTab("upcoming")}
-              className={`w-full py-2 rounded-lg font-medium transition ${
-                activeTab === "upcoming"
-                  ? " text-red-400 bg-gray-100"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-              }`}
-            >
-              Upcoming
-            </button>
+        <div className="w-full md:w-[30%] bg-white shadow-md  pb-6 sticky top-24 h-[85vh] overflow-y-auto">
+          {/* Tab Buttons  bg-gradient-to-r from-red-600 via-red-400 to-red-600*/}
+          <div className="flex flex-row gap-3 mb-6 p-2  shadow-xl shadow-gray-200
+                bg-red-200">
+            {["live", "recent", "upcoming"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`w-full py-2 rounded-lg font-medium transition ${
+                  activeTab === tab
+                    ? "text-red-400 bg-gray-100 "
+                    : " hover:border text-gray-700"
+                }`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
           </div>
 
+          {/* Tab Content */}
           <div>
             {activeTab === "live" && <div>Live Component</div>}
             {activeTab === "recent" && <div>Recent Component</div>}
@@ -66,9 +65,7 @@ function App() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
-
 export default App;

@@ -5,10 +5,17 @@ import { toast } from "react-toastify";
 import { FaRegUserCircle } from "react-icons/fa";
 import Loading from "./Loading";
 import image from "./image.png"
+import HomeIcon from '@mui/icons-material/Home';
+import AddBusinessIcon from '@mui/icons-material/AddBusiness';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import BeenhereIcon from '@mui/icons-material/Beenhere';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import AddIcon from '@mui/icons-material/Add';
+import GroupIcon from '@mui/icons-material/Group';
 
 const Navbar = () => {
-  const active = "  text-white rounded-md  transition duration-300";
-
+  const active = "  underline text-white rounded-md font-extrabold transition  scale-[1.1] duration-300";
+  const inActive = " text-gray-100 rounded-md font-extrabold transition duration-300";
   const { user, logOut, isLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -31,20 +38,60 @@ const Navbar = () => {
       <li>
           <NavLink
             to="/"
-            className={({ isActive }) => (isActive ? active : undefined)}
+            className={({ isActive }) => (isActive ? active : inActive )}
           >
-            Home
+             <HomeIcon/>Home
           </NavLink>
         </li>
+         <li>
+          <NavLink
+            to="/turf"
+            className={({ isActive }) => (isActive ? active : inActive )}
+          >
+            <AccountBalanceIcon/> Turf 
+          </NavLink>
+        </li>
+      
       {user && (
         <li>
           <NavLink
-            to="/manage-announcement"
-            className={({ isActive }) => (isActive ? active : undefined)}
+            to="/addturf"
+            className={({ isActive }) => (isActive ? active : inActive )}
           >
-            Announcement
+            <AddBusinessIcon/>Add Turf
           </NavLink>
         </li>
+        
+      )}
+       {user && (
+        <li>
+          <NavLink
+            to="/mybookings"
+            className={({ isActive }) => (isActive ? active : inActive )}
+          >
+           <BeenhereIcon/> My Bookings
+          </NavLink>
+        </li>
+        
+      )}
+        <li>
+          <NavLink
+            to="/manage-announcement"
+            className={({ isActive }) => (isActive ? active : inActive )}
+          >
+           <CampaignIcon/> Announcement
+          </NavLink>
+        </li>
+        {user && (
+        <li>
+          <NavLink
+            to="/addplayer"
+            className={({ isActive }) => (isActive ? active : inActive )}
+          >
+           <GroupIcon/>Players
+          </NavLink>
+        </li>
+        
       )}
     </>
   );
@@ -71,7 +118,7 @@ const Navbar = () => {
           </div>
           <ul
             tabIndex="-1"
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+            className="menu menu-sm dropdown-content  bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             {links}
           </ul>
