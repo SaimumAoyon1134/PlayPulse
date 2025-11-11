@@ -32,6 +32,8 @@ async function run() {
     const myPostColl = db.collection("Post");
     const turfsCollection = db.collection("Turfs");
     const playersCollection = db.collection("players");
+    const bookingsCollection = db.collection("bookings");
+    const matchesCollection = db.collection("matches");
 
     // ---------------------- ANNOUNCEMENTS ----------------------
 
@@ -241,7 +243,6 @@ async function run() {
         await turfsCollection.updateOne(
           { _id: new ObjectId(id) },
           { $set: { bookings: turf.bookings } }
-
         );
 
         res.json({ message: "Slot booked successfully!", booking: newBooking });
@@ -401,9 +402,110 @@ async function run() {
         res.status(500).json({ message: "Failed to add player" });
       }
     });
+
+    // In your server file (e.g., api/index.js or routes/bookings.js)
+    app.get("/admin/bookings", async (req, res) => {
+      try {
+        const bookings = await bookingsCollection
+          .find({})
+          .sort({ date: -1 })
+          .toArray();
+        res.status(200).json(bookings);
+      } catch (err) {
+        console.error("Error fetching booking history:", err);
+        res.status(500).json({ message: "Failed to fetch booking history" });
+      }
+    });
+
+    app.patch("/admin/bookings/:id/cancel", async (req, res) => {
+      try {
+        const id = req.params.id;
+        await bookingCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { status: "Cancelled" } }
+        );
+        res.json({ success: true });
+      } catch (err) {
+        res.status(500).json({ message: "Failed to cancel booking" });
+      }
+    });
+
+    // ✅ POST — Create booking
+    app.post("/bookings", async (req, res) => {
+      try {
+        const booking = req.body;
+        booking.createdAt = new Date();
+
+        const result = await bookingsCollection.insertOne(booking);
+        res.status(201).json({ success: true, id: result.insertedId });
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .json({ success: false, message: "Failed to create booking" });
+      }
+    });
+
+    // ✅ GET — Fetch all bookings (for admin later)
+    app.get("/bookings", async (req, res) => {
+      try {
+        const bookings = await bookingsCollection
+          .find()
+          .sort({ createdAt: -1 })
+          .toArray();
+        res.json(bookings);
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .json({ success: false, message: "Failed to fetch bookings" });
+      }
+    });
+
+    // POST /matches - create a match
+    app.post("/matches", async (req, res) => {
+      try {
+        const { teamA, teamB, teamSize } = req.body;
+
+        if (!teamA || !teamB || !teamSize) {
+          return res
+            .status(400)
+            .json({ message: "Team A, Team B, and teamSize are required" });
+        }
+
+        if (teamA.length !== teamSize || teamB.length !== teamSize) {
+          return res
+            .status(400)
+            .json({ message: `Both teams must have ${teamSize} players` });
+        }
+
+        const newMatch = {
+          teamA,
+          teamB,
+          teamSize,
+          createdAt: new Date(),
+        };
+
+        const result = await matchesCollection.insertOne(newMatch);
+        res.status(201).json({ _id: result.insertedId, ...newMatch });
+      } catch (err) {
+        console.error("Error creating match:", err);
+        res.status(500).json({ message: "Failed to create match" });
+      }
+    });
+    // GET /matches
+    app.get("/matches", async (req, res) => {
+      try {
+        const matches = await matchesCollection.find().toArray();
+        res.json(matches);
+      } catch (err) {
+        console.error("Error fetching matches:", err);
+        res.status(500).json({ message: "Failed to fetch matches" });
+      }
+    });
     // Ping test
-    await client.db("admin").command({ ping: 1 });
-    console.log("✅ MongoDB connected!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("✅ MongoDB connected!");
   } finally {
   }
 }
@@ -419,3 +521,5 @@ mongoose
     });
   })
   .catch((err) => console.error("MongoDB connection error:", err));
+
+module.exports = app;

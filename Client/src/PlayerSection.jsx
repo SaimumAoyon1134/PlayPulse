@@ -46,15 +46,15 @@ const PlayerSection = () => {
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <h2 className="text-3xl w-full col-span-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
-        Announcements
+        Player's Info....
       </h2>
       {/* Add Player Button */}
-      <button
+      {/* <button
         className=" bg-white text-black py-2 rounded-lg font-bold hover:bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 transition"
         onClick={() => setShowAddModal(true)}
       >
         + Add Player
-      </button>
+      </button> */}
 
       {/* Loading Spinner */}
       {loading && (
@@ -169,11 +169,11 @@ const PlayerSection = () => {
       )}
 
       {/* Add Player Modal */}
-      <AddPlayerModal
+      {/* <AddPlayerModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onPlayerAdded={(player) => setPlayers([...players, player])}
-      />
+      /> */}
 
       {/* Loader Style */}
       <style>

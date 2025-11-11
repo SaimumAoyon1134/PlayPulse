@@ -45,7 +45,7 @@ const TurfList = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100">
+    <div className="max-w-7xl mx-auto h-full py-10 px-4 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100">
       <h1 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
         Football Turfs
       </h1>

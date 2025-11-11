@@ -14,6 +14,8 @@ import Turf from "./Turf.jsx";
 import AddTurf from "./AddTurf.jsx";
 import MyBookings from "./MyBookings.jsx";
 import PlayerSection from "./PlayerSection.jsx";
+import TeamCreate from "./TeamCreate.jsx";
+import AdminPanel from "./AdminPanel.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +31,8 @@ const router = createBrowserRouter([
       { path: "addturf", element: <AddTurf/> },
       { path: "mybookings", element: <MyBookings/> },
       { path: "addplayer", element:<PlayerSection/> },
-   
+      { path: "teamcreate", element: <TeamCreate/> },
+      { path:"/admin" ,element:<AdminPanel />} 
     ],
   },
 ]);
