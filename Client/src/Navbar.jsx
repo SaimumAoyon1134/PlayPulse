@@ -128,6 +128,43 @@ const Navbar = () => {
           </NavLink>
         </li>
       )}
+      {
+        user && (
+          <li>
+            <NavLink
+              to="/creatematch"
+              className={({ isActive }) => (isActive ? active : inActive)}
+            >
+              <GroupIcon />Create Your Match
+            </NavLink>
+          </li>
+        )
+      }
+      {
+        user && (
+          <li>
+            <NavLink
+              to="/matches"
+              className={({ isActive }) => (isActive ? active : inActive)}
+            >
+              <GroupIcon />Matches
+            </NavLink>
+          </li>
+        )
+      }
+      {
+        user && (
+          <li>
+            <NavLink
+              to="/selectPlayers"
+              className={({ isActive }) => (isActive ? active : inActive)}
+            >
+              <GroupIcon />Select Players
+            </NavLink>
+          </li>
+        )
+      }
+
     </>
   );
   return (

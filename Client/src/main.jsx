@@ -20,9 +20,9 @@ import AdminPanel from "./AdminPanel.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>, 
+    element: <App />,
     children: [
-      { path: "/", element: <Home/>}, 
+      { path: "/", element: <Home /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "myprofile", element: <MyProfile /> },
