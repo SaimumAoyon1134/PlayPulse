@@ -14,22 +14,28 @@ import Turf from "./Turf.jsx";
 import AddTurf from "./AddTurf.jsx";
 import MyBookings from "./MyBookings.jsx";
 import PlayerSection from "./PlayerSection.jsx";
+import MatchPlay from "./MatchPlay/MatchPlay.jsx";
+import CreateMatch from "./MatchPlay/CreateMatch.jsx";
+import SelectPlayers from "./MatchPlay/SelectPlayers.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>, 
+    element: <App />,
     children: [
-      { path: "/", element: <Home/>}, 
+      { path: "/", element: <Home /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "myprofile", element: <MyProfile /> },
       { path: "manage-announcement", element: <ManageAnnouncement /> },
-      { path: "turf", element: <Turf/> },
-      { path: "addturf", element: <AddTurf/> },
-      { path: "mybookings", element: <MyBookings/> },
-      { path: "addplayer", element:<PlayerSection/> },
-   
+      { path: "turf", element: <Turf /> },
+      { path: "addturf", element: <AddTurf /> },
+      { path: "mybookings", element: <MyBookings /> },
+      { path: "addplayer", element: <PlayerSection /> },
+      { path: "creatematch", Component: CreateMatch },
+      { path: "matchplay", Component: MatchPlay },
+      { path: "/selectPlayers", Component: SelectPlayers }
+
     ],
   },
 ]);

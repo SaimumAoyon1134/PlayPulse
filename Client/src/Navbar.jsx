@@ -29,70 +29,107 @@ const Navbar = () => {
     logOut();
     toast.success("Successfully Log Out!");
   };
-  const onClickUpdate = () => {
-    console.log("object");
-  };
+  // const onClickUpdate = () => {
+  //   console.log("object");
+  // };
   const links = (
     <>
-     
+
       <li>
-          <NavLink
-            to="/"
-            className={({ isActive }) => (isActive ? active : inActive )}
-          >
-             <HomeIcon/>Home
-          </NavLink>
-        </li>
-         <li>
-          <NavLink
-            to="/turf"
-            className={({ isActive }) => (isActive ? active : inActive )}
-          >
-            <AccountBalanceIcon/> Turf 
-          </NavLink>
-        </li>
-      
+        <NavLink
+          to="/"
+          className={({ isActive }) => (isActive ? active : inActive)}
+        >
+          <HomeIcon />Home
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/turf"
+          className={({ isActive }) => (isActive ? active : inActive)}
+        >
+          <AccountBalanceIcon /> Turf
+        </NavLink>
+      </li>
+
       {user && (
         <li>
           <NavLink
             to="/addturf"
-            className={({ isActive }) => (isActive ? active : inActive )}
+            className={({ isActive }) => (isActive ? active : inActive)}
           >
-            <AddBusinessIcon/>Add Turf
+            <AddBusinessIcon />Add Turf
           </NavLink>
         </li>
-        
+
       )}
-       {user && (
+      {user && (
         <li>
           <NavLink
             to="/mybookings"
-            className={({ isActive }) => (isActive ? active : inActive )}
+            className={({ isActive }) => (isActive ? active : inActive)}
           >
-           <BeenhereIcon/> My Bookings
+            <BeenhereIcon /> My Bookings
           </NavLink>
         </li>
-        
+
       )}
-        <li>
-          <NavLink
-            to="/manage-announcement"
-            className={({ isActive }) => (isActive ? active : inActive )}
-          >
-           <CampaignIcon/> Announcement
-          </NavLink>
-        </li>
-        {user && (
+      <li>
+        <NavLink
+          to="/manage-announcement"
+          className={({ isActive }) => (isActive ? active : inActive)}
+        >
+          <CampaignIcon /> Announcement
+        </NavLink>
+      </li>
+
+      {user && (
         <li>
           <NavLink
             to="/addplayer"
-            className={({ isActive }) => (isActive ? active : inActive )}
+            className={({ isActive }) => (isActive ? active : inActive)}
           >
-           <GroupIcon/>Players
+            <GroupIcon />Players
           </NavLink>
         </li>
-        
+
       )}
+      {
+        user && (
+          <li>
+            <NavLink
+              to="/creatematch"
+              className={({ isActive }) => (isActive ? active : inActive)}
+            >
+              <GroupIcon />Create Your Match
+            </NavLink>
+          </li>
+        )
+      }
+      {
+        user && (
+          <li>
+            <NavLink
+              to="/matchPlay"
+              className={({ isActive }) => (isActive ? active : inActive)}
+            >
+              <GroupIcon />Match Play
+            </NavLink>
+          </li>
+        )
+      }
+      {
+        user && (
+          <li>
+            <NavLink
+              to="/selectPlayers"
+              className={({ isActive }) => (isActive ? active : inActive)}
+            >
+              <GroupIcon />Select Players
+            </NavLink>
+          </li>
+        )
+      }
     </>
   );
   return (
@@ -107,7 +144,7 @@ const Navbar = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-          
+
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

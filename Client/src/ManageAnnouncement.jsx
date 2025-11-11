@@ -4,9 +4,9 @@ import AnnouncementMarquee from "./AnnouncementMarquee";
 import { AuthContext } from "./AuthContext";
 
 const ManageAnnouncement = () => {
- const {announcements, setAnnouncements} = useContext(AuthContext);
+  const { announcements, setAnnouncements } = useContext(AuthContext);
 
-  
+
   useEffect(() => {
     const getAnnouncements = async () => {
       try {
@@ -33,7 +33,7 @@ const ManageAnnouncement = () => {
       const data = await res.json();
 
       if (data.insertedId) {
-  
+
         setAnnouncements((prev) => [
           ...prev,
           { _id: data.insertedId, announcement: announce },
@@ -47,7 +47,7 @@ const ManageAnnouncement = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-start py-2 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100">
-   <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
+      <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
         Announcements
       </h2>
       <div className="bg-gradient-to-br from-red-200 via-yellow-150 to-green-200 shadow-xl rounded-2xl p-8 w-full max-w-md transition-all duration-300 hover:shadow-2xl mt-6">

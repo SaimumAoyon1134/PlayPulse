@@ -6,6 +6,7 @@ import AnnouncementMarquee from "./AnnouncementMarquee";
 import Loading from "./Loading";
 import { AuthContext } from "./AuthContext";
 
+
 function App() {
   const [activeTab, setActiveTab] = useState("live");
   const location = useLocation();
@@ -14,7 +15,7 @@ function App() {
 
   useEffect(() => {
     setShowSpinner(true);
-    const timer = setTimeout(() => setShowSpinner(false), );
+    const timer = setTimeout(() => setShowSpinner(false),);
     return () => clearTimeout(timer);
   }, [location]);
 
@@ -30,7 +31,7 @@ function App() {
 
       <div className="sticky top-0 z-50 bg-base-100">
         <Navbar />
-       
+
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 min-h-screen bg-gray-50">
@@ -46,11 +47,10 @@ function App() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`w-full py-2 rounded-lg font-medium transition ${
-                  activeTab === tab
+                className={`w-full py-2 rounded-lg font-medium transition ${activeTab === tab
                     ? "text-red-400 bg-gray-100 "
                     : " hover:border text-gray-700"
-                }`}
+                  }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
