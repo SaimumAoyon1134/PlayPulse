@@ -132,6 +132,12 @@ const CreateMatch = () => {
                     >
                         Select Players for Team B
                     </Link>
+                    <Link
+                        to="/turf"
+                        className="text-center bg-blue-500 text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition"
+                    >
+                        Choose Turf
+                    </Link>
                 </div>
 
                 {/* Create button */}
