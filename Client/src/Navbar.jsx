@@ -110,10 +110,10 @@ const Navbar = () => {
         user && (
           <li>
             <NavLink
-              to="/matchPlay"
+              to="/matches"
               className={({ isActive }) => (isActive ? active : inActive)}
             >
-              <GroupIcon />Match Play
+              <GroupIcon />Matches
             </NavLink>
           </li>
         )
@@ -130,6 +130,7 @@ const Navbar = () => {
           </li>
         )
       }
+
     </>
   );
   return (

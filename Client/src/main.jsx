@@ -17,6 +17,7 @@ import PlayerSection from "./PlayerSection.jsx";
 import MatchPlay from "./MatchPlay/MatchPlay.jsx";
 import CreateMatch from "./MatchPlay/CreateMatch.jsx";
 import SelectPlayers from "./MatchPlay/SelectPlayers.jsx";
+import Matches from "./MatchPlay/Matches.jsx";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
       { path: "mybookings", element: <MyBookings /> },
       { path: "addplayer", element: <PlayerSection /> },
       { path: "creatematch", Component: CreateMatch },
-      { path: "matchplay", Component: MatchPlay },
+      { path: "matches", Component: Matches },
       { path: "/selectPlayers", Component: SelectPlayers }
 
     ],
