@@ -5,6 +5,8 @@ import { useState } from "react";
 const CreateMatch = () => {
     const [teamAPlayers, setTeamAPlayers] = useState([]);
     const [teamBPlayers, setTeamBPlayers] = useState([]);
+    const [selectedTurf, setSelectedTurf] = useState('');
+
 
 
 
@@ -15,7 +17,7 @@ const CreateMatch = () => {
         const teamB = e.target.teamB.value;
         const date = e.target.date.value;
         const time = e.target.time.value;
-        console.log(teamA, teamB, teamAPlayers, teamBPlayers, date, time);
+        console.log(teamA, teamB, teamAPlayers, teamBPlayers, date, time, selectedTurf);
 
 
 
