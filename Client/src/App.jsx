@@ -9,6 +9,7 @@ import Upcoming from "./Upcoming";
 import Live from "./Live";
 import AuthProvider from "./AuthProvider";
 import Recent from "./Recent";
+import image from "./image copy.png";
 
 
 function App() {
@@ -51,11 +52,12 @@ function App() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`w-full py-2 rounded-lg font-medium transition ${activeTab === tab
+                className={`w-full py-2 font-medium transition ${activeTab === tab
                     ? "text-red-400  "
-                    : " hover:border text-gray-700"
+                    : " border-red-600 hover:border-b-2  text-gray-700"
                   }`}
               >
+          
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
