@@ -46,28 +46,38 @@ const Navbar = () => {
           <HomeIcon />
           Home
         </NavLink>
-
       </li>
-         <li>
-          <NavLink
-            to="/addturf"
-            className={({ isActive }) => (isActive ? active : inActive)}
-          >
-            <AddBusinessIcon />
-            Add Turf
-          </NavLink>
-        </li>
-<li>
-    <NavLink to="/admin" className={({ isActive }) => (isActive ? active : inActive)}>
-      🧾 Booking History
-    </NavLink>
-  </li>
+      <li>
+        <NavLink
+          to="/addturf"
+          className={({ isActive }) => (isActive ? active : inActive)}
+        >
+          <AddBusinessIcon />
+          Add Turf
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/admin"
+          className={({ isActive }) => (isActive ? active : inActive)}
+        >
+          🧾 Booking History
+        </NavLink>
+      </li>
       <li>
         <NavLink
           to="/manage-announcement"
           className={({ isActive }) => (isActive ? active : inActive)}
         >
           <CampaignIcon /> Announcement
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/adminmatchtable"
+          className={({ isActive }) => (isActive ? active : inActive)}
+        >
+          <Groups3Icon/> Matches
         </NavLink>
       </li>
     </>
@@ -92,9 +102,6 @@ const Navbar = () => {
         </NavLink>
       </li>
 
-     
-     
-   
       {user && (
         <li>
           <NavLink
@@ -105,7 +112,7 @@ const Navbar = () => {
           </NavLink>
         </li>
       )}
-      
+
       {user && (
         <li>
           <NavLink
@@ -128,8 +135,6 @@ const Navbar = () => {
           </NavLink>
         </li>
       )}
-     
-
     </>
   );
   return (
@@ -139,7 +144,7 @@ const Navbar = () => {
           <div
             tabIndex={0}
             role="button"
-            className="btn btn-ghost text-white lg:hidden"
+            className="btn btn-ghost  text-white lg:hidden"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -158,7 +163,7 @@ const Navbar = () => {
           </div>
           <ul
             tabIndex="-1"
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+            className="menu menu-sm dropdown-content bg-blue-900 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             {user?.email === "saimum681@gmail.com" ? linkadmin : links}
           </ul>
@@ -169,7 +174,9 @@ const Navbar = () => {
         </NavLink>
       </div>
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">{user?.email === "saimum681@gmail.com" ? linkadmin : links}</ul>
+        <ul className="menu menu-horizontal px-1">
+          {user?.email === "saimum681@gmail.com" ? linkadmin : links}
+        </ul>
       </div>
       <div className="navbar-end">
         {isLoading ? (

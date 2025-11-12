@@ -65,12 +65,12 @@ const AdminPanel = () => {
     return <p className="text-center mt-10">Loading booking history...</p>;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center text-green-700">
-        Booking History
-      </h1>
-
-      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+    <div className="py-2 bg-gray-50 min-h-screen">
+ 
+     <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
+         Booking History
+      </h2>
+      <div className="px-6 overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="table w-full text-sm">
           <thead className="bg-green-600 text-white">
             <tr>

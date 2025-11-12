@@ -136,7 +136,7 @@ const CreateMatch = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 min-h-screen">
+    <div className="max-w-6xl text-black  mx-auto p-4 sm:p-6 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 min-h-screen">
       <h2 className="text-3xl font-bold text-center mb-6 text-green-700">
         Create Match
       </h2>

@@ -171,7 +171,7 @@ const Post = () => {
               {/* Comment Modal */}
               {openModalPostId === post._id && (
                 <dialog open className="modal modal-bottom sm:modal-middle">
-                  <div className="modal-box flex flex-col max-h-[70vh] w-full">
+                  <div className="bg-white text-black modal-box flex flex-col max-h-[70vh] w-full">
                     <h3 className="font-bold text-lg mb-2">
                       Comments for {post.username || "User"}
                     </h3>

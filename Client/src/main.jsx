@@ -16,6 +16,7 @@ import MyBookings from "./MyBookings.jsx";
 import PlayerSection from "./PlayerSection.jsx";
 import TeamCreate from "./TeamCreate.jsx";
 import AdminPanel from "./AdminPanel.jsx";
+import AdminMatchTable from "./AdminMatchTable.jsx";
 
 const router = createBrowserRouter([
   {
@@ -32,7 +33,8 @@ const router = createBrowserRouter([
       { path: "mybookings", element: <MyBookings/> },
       { path: "addplayer", element:<PlayerSection/> },
       { path: "teamcreate", element: <TeamCreate/> },
-      { path:"/admin" ,element:<AdminPanel />} 
+      { path:"/admin" ,element:<AdminPanel />} ,
+      { path:"/adminmatchtable" ,element:<AdminMatchTable/>} 
     ],
   },
 ]);
