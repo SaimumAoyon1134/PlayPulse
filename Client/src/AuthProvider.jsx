@@ -114,7 +114,8 @@ const update = async (name, image) => {
     announcements,
     setAnnouncements,
     posts, 
-    setPosts
+    setPosts,
+   
   };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
