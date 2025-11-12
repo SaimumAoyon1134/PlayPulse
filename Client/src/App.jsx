@@ -5,6 +5,10 @@ import { Outlet, useLocation } from "react-router-dom";
 import AnnouncementMarquee from "./AnnouncementMarquee";
 import Loading from "./Loading";
 import { AuthContext } from "./AuthContext";
+import Upcoming from "./Upcoming";
+import Live from "./Live";
+import AuthProvider from "./AuthProvider";
+import Recent from "./Recent";
 
 
 function App() {
@@ -39,16 +43,16 @@ function App() {
           <Outlet />
         </div>
 
-        <div className="w-full md:w-[30%] bg-white shadow-md  pb-6 sticky top-24 h-[85vh] overflow-y-auto">
+        <div className="w-full md:w-[30%] bg-white shadow-md  pb-6 sticky top-20 h-[85vh] overflow-y-auto">
           {/* Tab Buttons  bg-gradient-to-r from-red-600 via-red-400 to-red-600*/}
-          <div className="flex flex-row gap-3 mb-6 p-2  shadow-xl shadow-gray-200
-                bg-red-200">
+          <div className="flex flex-row gap-3 mb-6 px-2  shadow-xl shadow-gray-200
+               ">
             {["live", "recent", "upcoming"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`w-full py-2 rounded-lg font-medium transition ${activeTab === tab
-                    ? "text-red-400 bg-gray-100 "
+                    ? "text-red-400  "
                     : " hover:border text-gray-700"
                   }`}
               >
@@ -58,11 +62,14 @@ function App() {
           </div>
 
           {/* Tab Content */}
-          <div>
-            {activeTab === "live" && <div>Live Component</div>}
-            {activeTab === "recent" && <div>Recent Component</div>}
-            {activeTab === "upcoming" && <div>Upcoming Component</div>}
+           <AuthProvider>
+        <div>
+            {activeTab === "live" && <Live/>}
+            {activeTab === "recent" && <Recent/>}
+            {activeTab === "upcoming" && <Upcoming/>}
           </div>
+    </AuthProvider>
+       
         </div>
       </div>
     </div>

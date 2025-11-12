@@ -465,24 +465,51 @@ async function run() {
     // POST /matches - create a match
     app.post("/matches", async (req, res) => {
       try {
-        const { teamA, teamB, teamSize } = req.body;
+        const {
+          teamA,
+          teamB,
+          teamSize,
+          teamAName,
+          teamBName,
+          matchDate,
+          matchTime,
+          matchDuration,
+        } = req.body;
 
-        if (!teamA || !teamB || !teamSize) {
-          return res
-            .status(400)
-            .json({ message: "Team A, Team B, and teamSize are required" });
+        if (
+          !teamA ||
+          !teamB ||
+          !teamSize ||
+          !matchDate ||
+          !matchTime ||
+          !matchDuration
+        ) {
+          return res.status(400).json({
+            message:
+              "Team A, Team B, teamSize, matchDate, matchTime, and matchDuration are required",
+          });
         }
 
         if (teamA.length !== teamSize || teamB.length !== teamSize) {
           return res
             .status(400)
-            .json({ message: `Both teams must have ${teamSize} players` });
+            .json({
+              message: `Both teams must have exactly ${teamSize} players`,
+            });
         }
+
+        const matchDateTime = new Date(`${matchDate}T${matchTime}:00`);
 
         const newMatch = {
           teamA,
           teamB,
+          teamAName: teamAName || "Team A",
+          teamBName: teamBName || "Team B",
           teamSize,
+          matchDate,
+          matchTime,
+          matchDuration,
+          matchDateTime,
           createdAt: new Date(),
         };
 

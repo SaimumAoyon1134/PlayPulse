@@ -23,6 +23,42 @@ const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [announcements, setAnnouncements] = useState([]);
   const [posts, setPosts] = useState([]);
+   const [upcoming, setUpcoming] = useState([]);
+    const [live, setLive] = useState([]);
+    const [recent, setRecent] = useState([]);
+  
+    useEffect(() => {
+      const fetchMatches = async () => {
+        try {
+          const res = await fetch("http://localhost:3000/matches");
+          const data = await res.json();
+          const now = new Date();
+  
+          const upcomingMatches = [];
+          const liveMatches = [];
+          const recentMatches = [];
+  
+          data.forEach((m) => {
+            const start = new Date(`${m.matchDate}T${m.matchTime}`);
+            const end = new Date(start.getTime() + m.matchDuration * 60000);
+  
+            if (now < start) upcomingMatches.push(m);
+            else if (now >= start && now <= end) liveMatches.push(m);
+            else recentMatches.push(m);
+          });
+  
+          setUpcoming(upcomingMatches);
+          setLive(liveMatches);
+          setRecent(recentMatches);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+  
+      fetchMatches();
+    }, []);
+
+   
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -115,6 +151,9 @@ const update = async (name, image) => {
     setAnnouncements,
     posts, 
     setPosts,
+    upcoming,
+    live,
+    recent,
    
   };
   return (

@@ -1,9 +1,64 @@
-import React from 'react'
+import React, { useContext } from "react";
+import { AuthContext } from "./AuthContext";
 
 const Live = () => {
-  return (
-    <div>Live</div>
-  )
-}
+  const { live } = useContext(AuthContext);
 
-export default Live
+  if (!live) return <div className="text-center py-10 text-lg">Loading...</div>;
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-2">
+      {live.length === 0 ? (
+        <p className="text-center text-gray-500 text-lg">No live matches right now.</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-8">
+          {live.map((match) => (
+            <div
+              key={match._id}
+              className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between relative"
+            >
+              <span className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                LIVE
+              </span>
+
+              <div>
+                <h3 className="text-center text-xl font-semibold text-gray-900 mb-3">
+                  <span className="text-blue-600">{match.teamAName}</span>{" "}
+                  <span className="text-gray-500">vs</span>{" "}
+                  <span className="text-red-600">{match.teamBName}</span>
+                </h3>
+
+                <div className="space-y-2 text-sm text-gray-700">
+                  <p>
+                    <span className="font-medium text-gray-900">📅 Date:</span>{" "}
+                    {match.matchDate}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">⏰ Time:</span>{" "}
+                    {match.matchTime}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">⏱ Duration:</span>{" "}
+                    {match.matchDuration} mins
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">👥 Team Size:</span>{" "}
+                    {match.teamSize}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 text-center">
+                <button className="bg-gradient-to-r from-red-500 to-pink-600 text-white font-semibold px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform duration-200">
+                  Watch Now
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Live;
