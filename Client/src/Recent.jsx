@@ -45,7 +45,7 @@ const Recent = () => {
               </div>
 
               <div className="mt-5 text-center">
-                <button className="bg-gradient-to-r from-gray-500 to-gray-700 text-white font-semibold px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform duration-200">
+                <button className="bg-gradient-to-r from-green-500 to-emerald-600  text-white font-semibold px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform duration-200">
                   View Summary
                 </button>
               </div>
