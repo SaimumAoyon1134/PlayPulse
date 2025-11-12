@@ -6,11 +6,12 @@ import { AuthContext } from "./AuthContext";
 const ManageAnnouncement = () => {
   const { announcements, setAnnouncements } = useContext(AuthContext);
 
-
   useEffect(() => {
     const getAnnouncements = async () => {
       try {
-        const res = await fetch("http://localhost:3000/announcement");
+        const res = await fetch(
+          "https://play-pulse-ivory.vercel.app/announcement"
+        );
         const data = await res.json();
         setAnnouncements(data);
       } catch (err) {
@@ -25,15 +26,17 @@ const ManageAnnouncement = () => {
     const announce = e.target.announcement.value;
 
     try {
-      const res = await fetch("http://localhost:3000/announcement", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ announcement: announce }),
-      });
+      const res = await fetch(
+        "https://play-pulse-ivory.vercel.app/announcement",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ announcement: announce }),
+        }
+      );
       const data = await res.json();
 
       if (data.insertedId) {
-
         setAnnouncements((prev) => [
           ...prev,
           { _id: data.insertedId, announcement: announce },
@@ -76,7 +79,10 @@ const ManageAnnouncement = () => {
         <h3 className="text-xl font-semibold text-gray-800 mb-4">
           📢 Recent Announcements
         </h3>
-        <ShowAnnouncement announcements={announcements} setAnnouncements={setAnnouncements} />
+        <ShowAnnouncement
+          announcements={announcements}
+          setAnnouncements={setAnnouncements}
+        />
       </div>
     </div>
   );

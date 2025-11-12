@@ -13,7 +13,7 @@ const MyBookings = () => {
 
   useEffect(() => {
     if (!user?.email) return;
-    fetch(`http://localhost:3000/user/bookings/${user.email}`)
+    fetch(`https://play-pulse-ivory.vercel.app/user/bookings/${user.email}`)
       .then((res) => res.json())
       .then((data) => {
         setBookings(data);
@@ -28,7 +28,7 @@ const MyBookings = () => {
   const handleCancel = async (booking) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/turfs/${booking.turfId}/cancel`,
+        `https://play-pulse-ivory.vercel.app/turfs/${booking.turfId}/cancel`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

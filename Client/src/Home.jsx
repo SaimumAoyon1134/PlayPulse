@@ -9,7 +9,7 @@ import AnnouncementMarquee from "./AnnouncementMarquee";
 const Home = () => {
   const [activeTab, setActiveTab] = useState("live");
   const modalRef = useRef(null);
-  const { user, setPosts ,isLoading} = useContext(AuthContext);
+  const { user, setPosts, isLoading } = useContext(AuthContext);
 
   const handlePost = () => {
     if (modalRef.current) {
@@ -17,13 +17,12 @@ const Home = () => {
     }
   };
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const caption = e.target.caption.value;
     const imageUrl = e.target.imageUrl.value;
 
-    if (!user) return; 
+    if (!user) return;
 
     const postData = {
       caption,
@@ -35,7 +34,7 @@ const Home = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/post", {
+      const res = await fetch("https://play-pulse-ivory.vercel.app/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),
@@ -44,10 +43,7 @@ const Home = () => {
       const data = await res.json();
 
       if (data.insertedId) {
-        setPosts((prev) => [
-          ...prev,
-          { _id: data.insertedId, ...postData },
-        ]);
+        setPosts((prev) => [...prev, { _id: data.insertedId, ...postData }]);
         e.target.reset();
         modalRef.current.close();
       }
@@ -59,7 +55,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 ">
       <h1 className=" w-full  text-white mb-5 font-semibold  text-center">
- <AnnouncementMarquee />
+        <AnnouncementMarquee />
       </h1>
 
       <div className="w-full flex justify-end mb-4 border-b">

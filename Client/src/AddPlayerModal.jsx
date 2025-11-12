@@ -20,11 +20,21 @@ const AddPlayerModal = ({ isOpen, onClose, onPlayerAdded }) => {
       name,
       category,
       avatar,
-      stats: { goals: 0, assists: 0, penalties: 0, fouls: 0, wins: 0, losses: 0 },
+      stats: {
+        goals: 0,
+        assists: 0,
+        penalties: 0,
+        fouls: 0,
+        wins: 0,
+        losses: 0,
+      },
     };
 
     try {
-      const res = await axios.post("http://localhost:3000/players", newPlayer);
+      const res = await axios.post(
+        "https://play-pulse-ivory.vercel.app/players",
+        newPlayer
+      );
       if (res.status === 201 || res.status === 200) {
         onPlayerAdded(res.data); // add new player to list
         setName("");

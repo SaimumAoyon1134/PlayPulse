@@ -9,7 +9,7 @@ const Post = () => {
 
   // Fetch all posts from backend
   useEffect(() => {
-    fetch("http://localhost:3000/post")
+    fetch("https://play-pulse-ivory.vercel.app/post")
       .then((res) => res.json())
       .then((data) => setPosts(data))
       .catch((err) => console.error("Error fetching posts:", err));
@@ -17,35 +17,35 @@ const Post = () => {
 
   // Handle Like
   const handleLike = async (postId) => {
-  const currentUser = user?.displayName || "Anonymous";
+    const currentUser = user?.displayName || "Anonymous";
 
-  setPosts((prev) =>
-    prev.map((p) => {
-      if (p._id !== postId) return p;
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p._id !== postId) return p;
 
-      const alreadyLiked = p.likesUsers?.includes(currentUser);
-      const updatedLikesUsers = alreadyLiked
-        ? p.likesUsers.filter((u) => u !== currentUser)
-        : [...(p.likesUsers || []), currentUser];
+        const alreadyLiked = p.likesUsers?.includes(currentUser);
+        const updatedLikesUsers = alreadyLiked
+          ? p.likesUsers.filter((u) => u !== currentUser)
+          : [...(p.likesUsers || []), currentUser];
 
-      return {
-        ...p,
-        likes: alreadyLiked ? (p.likes || 1) - 1 : (p.likes || 0) + 1,
-        likesUsers: updatedLikesUsers,
-      };
-    })
-  );
+        return {
+          ...p,
+          likes: alreadyLiked ? (p.likes || 1) - 1 : (p.likes || 0) + 1,
+          likesUsers: updatedLikesUsers,
+        };
+      })
+    );
 
-  try {
-    await fetch(`http://localhost:3000/post/${postId}/like`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user: currentUser }),
-    });
-  } catch (err) {
-    console.error("Error toggling like:", err);
-  }
-};
+    try {
+      await fetch(`https://play-pulse-ivory.vercel.app/post/${postId}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: currentUser }),
+      });
+    } catch (err) {
+      console.error("Error toggling like:", err);
+    }
+  };
   // Handle Comment
   const handleComment = async (e, postId) => {
     e.preventDefault();
@@ -55,11 +55,14 @@ const Post = () => {
     const comment = { text, user: user?.displayName || "Anonymous" };
 
     try {
-      await fetch(`http://localhost:3000/post/${postId}/comment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(comment),
-      });
+      await fetch(
+        `https://play-pulse-ivory.vercel.app/post/${postId}/comment`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(comment),
+        }
+      );
 
       setPosts((prev) =>
         prev.map((post) =>
@@ -129,25 +132,27 @@ const Post = () => {
             <div className="p-4 space-y-3">
               {/* Like Button with tooltip */}
               <div className="relative group inline-block">
-               <button
-  onClick={() => handleLike(post._id)}
-  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 ${
-    post.likesUsers?.includes(user?.displayName)
-      ? "text-red-600 scale-105"
-      : "text-gray-600 hover:text-red-500"
-  }`}
->
-  <span className="text-lg">
-    {post.likesUsers?.includes(user?.displayName) ? "❤️" : "🤍"}
-  </span>
-  <span className="font-medium">{post.likes || 0}</span>
-              </button>
+                <button
+                  onClick={() => handleLike(post._id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                    post.likesUsers?.includes(user?.displayName)
+                      ? "text-red-600 scale-105"
+                      : "text-gray-600 hover:text-red-500"
+                  }`}
+                >
+                  <span className="text-lg">
+                    {post.likesUsers?.includes(user?.displayName) ? "❤️" : "🤍"}
+                  </span>
+                  <span className="font-medium">{post.likes || 0}</span>
+                </button>
 
                 {/* Tooltip */}
                 <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 ml-15 hidden group-hover:block w-max max-w-xs bg-gray-800 text-white text-xs rounded-md shadow-lg p-2 z-10">
                   {post.likesUsers && post.likesUsers.length > 0 ? (
                     post.likesUsers.map((u, i) => (
-                      <span key={i} className="block">• {u}</span>
+                      <span key={i} className="block">
+                        • {u}
+                      </span>
                     ))
                   ) : (
                     <span>No reactions yet</span>
@@ -165,17 +170,17 @@ const Post = () => {
 
               {/* Comment Modal */}
               {openModalPostId === post._id && (
-                <dialog
-                  open
-                  className="modal modal-bottom sm:modal-middle"
-                >
+                <dialog open className="modal modal-bottom sm:modal-middle">
                   <div className="modal-box flex flex-col max-h-[70vh] w-full">
                     <h3 className="font-bold text-lg mb-2">
                       Comments for {post.username || "User"}
                     </h3>
 
                     {/* Comment List */}
-                    <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
+                    <div
+                      className="overflow-y-auto"
+                      style={{ maxHeight: "300px" }}
+                    >
                       {post.comments && post.comments.length > 0 ? (
                         post.comments.map((c, idx) => (
                           <p key={idx} className="text-gray-700 text-sm mb-1">
@@ -214,7 +219,7 @@ const Post = () => {
 
                     <div className="modal-action mt-2 flex justify-center">
                       <button
-                          className="px-6 py-2 rounded-full font-semibold bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white shadow-lg hover:scale-105 transition-transform duration-200"
+                        className="px-6 py-2 rounded-full font-semibold bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white shadow-lg hover:scale-105 transition-transform duration-200"
                         onClick={() => setOpenModalPostId(null)}
                       >
                         Close

@@ -1,8 +1,6 @@
 import React, { use, useEffect, useState } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-
-
 import { AuthContext } from "./AuthContext";
 import {
   createUserWithEmailAndPassword,
@@ -13,57 +11,53 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../firebase.init";
- 
 
 const provider = new GoogleAuthProvider();
-
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [announcements, setAnnouncements] = useState([]);
   const [posts, setPosts] = useState([]);
-   const [upcoming, setUpcoming] = useState([]);
-    const [live, setLive] = useState([]);
-    const [recent, setRecent] = useState([]);
-  
-    useEffect(() => {
-      const fetchMatches = async () => {
-        try {
-          const res = await fetch("http://localhost:3000/matches");
-          const data = await res.json();
-          const now = new Date();
-  
-          const upcomingMatches = [];
-          const liveMatches = [];
-          const recentMatches = [];
-  
-          data.forEach((m) => {
-            const start = new Date(`${m.matchDate}T${m.matchTime}`);
-            const end = new Date(start.getTime() + m.matchDuration * 60000);
-  
-            if (now < start) upcomingMatches.push(m);
-            else if (now >= start && now <= end) liveMatches.push(m);
-            else recentMatches.push(m);
-          });
-  
-          setUpcoming(upcomingMatches);
-          setLive(liveMatches);
-          setRecent(recentMatches);
-        } catch (err) {
-          console.error(err);
-        }
-      };
-  
-      fetchMatches();
-    }, []);
+  const [upcoming, setUpcoming] = useState([]);
+  const [live, setLive] = useState([]);
+  const [recent, setRecent] = useState([]);
 
-   
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const res = await fetch("https://play-pulse-ivory.vercel.app/matches");
+        const data = await res.json();
+        const now = new Date();
+
+        const upcomingMatches = [];
+        const liveMatches = [];
+        const recentMatches = [];
+
+        data.forEach((m) => {
+          const start = new Date(`${m.matchDate}T${m.matchTime}`);
+          const end = new Date(start.getTime() + m.matchDuration * 60000);
+
+          if (now < start) upcomingMatches.push(m);
+          else if (now >= start && now <= end) liveMatches.push(m);
+          else recentMatches.push(m);
+        });
+
+        setUpcoming(upcomingMatches);
+        setLive(liveMatches);
+        setRecent(recentMatches);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchMatches();
+  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch("http://localhost:3000/post");
+        const res = await fetch("https://play-pulse-ivory.vercel.app/post");
         const data = await res.json();
         setPosts(data);
       } catch (err) {
@@ -72,7 +66,7 @@ const AuthProvider = ({ children }) => {
     };
     fetchPosts();
   }, []);
-  
+
   const signUp = (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
@@ -120,24 +114,24 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     console.log("User changed:", user);
   }, [user]);
-  
-const update = async (name, image) => {
-  if (auth.currentUser) {
-    setIsLoading(true); 
-    try {
-      await updateProfile(auth.currentUser, {
-        displayName: name,
-        photoURL: image,
-      });
 
-      setUser({ ...auth.currentUser }); 
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false); 
+  const update = async (name, image) => {
+    if (auth.currentUser) {
+      setIsLoading(true);
+      try {
+        await updateProfile(auth.currentUser, {
+          displayName: name,
+          photoURL: image,
+        });
+
+        setUser({ ...auth.currentUser });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }
-};
+  };
   const authInfo = {
     signUp,
     signIn,
@@ -149,12 +143,11 @@ const update = async (name, image) => {
     googleSignIn,
     announcements,
     setAnnouncements,
-    posts, 
+    posts,
     setPosts,
     upcoming,
     live,
     recent,
-   
   };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>

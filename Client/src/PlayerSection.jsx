@@ -15,7 +15,9 @@ const PlayerSection = () => {
   const fetchPlayers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/players");
+      const res = await axios.get(
+        "https://play-pulse-ivory.vercel.app/players"
+      );
       setPlayers(res.data);
     } catch (err) {
       console.error("Error fetching players:", err);
@@ -90,7 +92,9 @@ const PlayerSection = () => {
                 className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md mb-2"
               />
               <h3 className="font-extrabold text-gray-800 text-lg">{name}</h3>
-              <p className="text-sm font-semibold text-gray-600 mb-2">{category}</p>
+              <p className="text-sm font-semibold text-gray-600 mb-2">
+                {category}
+              </p>
 
               <div className="flex flex-wrap justify-center gap-3 mt-2">
                 <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full font-medium">

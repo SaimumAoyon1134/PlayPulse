@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 });
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
     const db = client.db("PlayPulseDB");
     const myColl = db.collection("Announcement");
     const myPostColl = db.collection("Post");
@@ -540,13 +540,14 @@ async function run() {
 run().catch(console.dir);
 
 // Start server
-mongoose
-  .connect(uri)
-  .then(() => {
-    app.listen(port, () => {
+// mongoose
+//   .connect(uri)
+//   .then(() => {
+   
+//   })
+//   .catch((err) => console.error("MongoDB connection error:", err));
+
+// module.exports = app;
+ app.listen(port, () => {
       console.log(`🚀 Server running on port ${port}`);
     });
-  })
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-module.exports = app;

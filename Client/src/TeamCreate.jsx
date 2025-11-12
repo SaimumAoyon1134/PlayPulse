@@ -23,7 +23,9 @@ const CreateMatch = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/players");
+        const res = await axios.get(
+          "https://play-pulse-ivory.vercel.app/players"
+        );
         setPlayers(res.data);
       } catch (err) {
         console.error("Failed to fetch players:", err);
@@ -69,7 +71,7 @@ const CreateMatch = () => {
 
     try {
       setLoading(true);
-      await axios.post("http://localhost:3000/matches", {
+      await axios.post("https://play-pulse-ivory.vercel.app/matches", {
         teamA: teamA.map((p) => p._id),
         teamB: teamB.map((p) => p._id),
         teamAName: teamAName.trim(),
@@ -171,40 +173,46 @@ const CreateMatch = () => {
         />
 
         {/* Date & Time Inputs */}
-       <div className="flex flex-col sm:flex-row justify-between items-stretch gap-4 w-full">
-  {/* each child (date, time, duration input) */}
-  <div className="flex-1">
-    <label className="text-sm font-semibold mb-1 block">Match Date</label>
-    <input
-      type="date"
-      value={matchDate}
-      onChange={(e) => setMatchDate(e.target.value)}
-      className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-    />
-  </div>
+        <div className="flex flex-col sm:flex-row justify-between items-stretch gap-4 w-full">
+          {/* each child (date, time, duration input) */}
+          <div className="flex-1">
+            <label className="text-sm font-semibold mb-1 block">
+              Match Date
+            </label>
+            <input
+              type="date"
+              value={matchDate}
+              onChange={(e) => setMatchDate(e.target.value)}
+              className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
 
-  <div className="flex-1">
-    <label className="text-sm font-semibold mb-1 block">Match Time</label>
-    <input
-      type="time"
-      value={matchTime}
-      onChange={(e) => setMatchTime(e.target.value)}
-      className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-    />
-  </div>
+          <div className="flex-1">
+            <label className="text-sm font-semibold mb-1 block">
+              Match Time
+            </label>
+            <input
+              type="time"
+              value={matchTime}
+              onChange={(e) => setMatchTime(e.target.value)}
+              className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
 
-  <div className="flex-1">
-    <label className="text-sm font-semibold mb-1 block">Duration (mins)</label>
-    <input
-      type="number"
-      min={10}
-      max={300}
-      value={matchDuration}
-      onChange={(e) => setMatchDuration(parseInt(e.target.value))}
-      className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
-    />
-  </div>
-</div>
+          <div className="flex-1">
+            <label className="text-sm font-semibold mb-1 block">
+              Duration (mins)
+            </label>
+            <input
+              type="number"
+              min={10}
+              max={300}
+              value={matchDuration}
+              onChange={(e) => setMatchDuration(parseInt(e.target.value))}
+              className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Search & Create */}

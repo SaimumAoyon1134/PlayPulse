@@ -9,9 +9,11 @@ const AdminPanel = () => {
 
   const fetchBookings = async () => {
     try {
-      const res = await fetch("http://localhost:3000/admin/bookings");
+      const res = await fetch(
+        "https://play-pulse-ivory.vercel.app/admin/bookings"
+      );
       const data = await res.json();
-      console.log(data)
+      console.log(data);
       setBookings(data);
     } catch (err) {
       console.error("Error fetching bookings:", err);
@@ -22,19 +24,21 @@ const AdminPanel = () => {
   };
 
   const handleCancel = async (id) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+    if (!window.confirm("Are you sure you want to cancel this booking?"))
+      return;
 
     try {
-      const res = await fetch(`http://localhost:3000/admin/bookings/${id}/cancel`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `https://play-pulse-ivory.vercel.app/admin/bookings/${id}/cancel`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       if (res.ok) {
         toast.success("Booking cancelled");
         setBookings((prev) =>
-          prev.map((b) =>
-            b._id === id ? { ...b, status: "Cancelled" } : b
-          )
+          prev.map((b) => (b._id === id ? { ...b, status: "Cancelled" } : b))
         );
       } else {
         toast.error("Failed to cancel");
@@ -50,10 +54,15 @@ const AdminPanel = () => {
   }, []);
 
   if (!user || user.email !== "saimum681@gmail.com") {
-    return <p className="text-center text-red-600 mt-10">Access denied. Admin only.</p>;
+    return (
+      <p className="text-center text-red-600 mt-10">
+        Access denied. Admin only.
+      </p>
+    );
   }
 
-  if (loading) return <p className="text-center mt-10">Loading booking history...</p>;
+  if (loading)
+    return <p className="text-center mt-10">Loading booking history...</p>;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -82,7 +91,9 @@ const AdminPanel = () => {
                 <td>{b.userName || b.user}</td>
                 <td>{b.turfName}</td>
                 <td>{b.date}</td>
-                <td>{b.start} - {b.end}</td>
+                <td>
+                  {b.start} - {b.end}
+                </td>
                 <td>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${

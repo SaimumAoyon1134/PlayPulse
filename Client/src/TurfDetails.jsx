@@ -53,7 +53,6 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
   //       ...prev,
   //       { ...slot, date: selectedDate, user: user.email },
 
-        
   //     ]);
   //     const data = { ...slot, date: selectedDate, user: user.displayName };
   //     console.log(data)
@@ -61,59 +60,62 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
   //   setLoadingSlot(null);
   // };
   const handleSlotBooking = async (slot) => {
-  if (!user?.email) {
-    alert("You must be logged in to book a slot!");
-    return;
-  }
-
-  setLoadingSlot(slot.start);
-
-  try {
-    // Call your existing turf booking logic
-    const success = await handleBooking(selectedTurf._id, slot, selectedDate);
-
-    if (success) {
-      // Construct booking data to save in the new collection
-      const bookingData = {
-        turfId: selectedTurf._id,
-        turfName: selectedTurf.name,
-        user: user.displayName || user.email,
-        email: user.email,
-        date: selectedDate,
-        start: slot.start,
-        end: slot.end,
-        price: selectedTurf.price,
-        status: "Booked",
-        createdAt: new Date(),
-      };
-
-      // Save booking in MongoDB (bookings collection)
-      const res = await fetch("http://localhost:3000/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingData),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("✅ Booking confirmed!");
-        // Update local state so UI updates instantly
-        setBookings((prev) => [
-          ...prev,
-          { ...slot, date: selectedDate, user: user.email },
-        ]);
-      } else {
-        alert("❌ Failed to save booking in database!");
-      }
+    if (!user?.email) {
+      alert("You must be logged in to book a slot!");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    alert("⚠️ Something went wrong while booking!");
-  }
 
-  setLoadingSlot(null);
-};
+    setLoadingSlot(slot.start);
+
+    try {
+      // Call your existing turf booking logic
+      const success = await handleBooking(selectedTurf._id, slot, selectedDate);
+
+      if (success) {
+        // Construct booking data to save in the new collection
+        const bookingData = {
+          turfId: selectedTurf._id,
+          turfName: selectedTurf.name,
+          user: user.displayName || user.email,
+          email: user.email,
+          date: selectedDate,
+          start: slot.start,
+          end: slot.end,
+          price: selectedTurf.price,
+          status: "Booked",
+          createdAt: new Date(),
+        };
+
+        // Save booking in MongoDB (bookings collection)
+        const res = await fetch(
+          "https://play-pulse-ivory.vercel.app/bookings",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bookingData),
+          }
+        );
+
+        const data = await res.json();
+
+        if (data.success) {
+          alert("✅ Booking confirmed!");
+          // Update local state so UI updates instantly
+          setBookings((prev) => [
+            ...prev,
+            { ...slot, date: selectedDate, user: user.email },
+          ]);
+        } else {
+          alert("❌ Failed to save booking in database!");
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      alert("⚠️ Something went wrong while booking!");
+    }
+
+    setLoadingSlot(null);
+  };
 
   // Check if a slot is booked
   const isSlotBooked = (slot) =>

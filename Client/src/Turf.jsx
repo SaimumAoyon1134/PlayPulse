@@ -10,7 +10,7 @@ const TurfList = () => {
 
   // Fetch turfs
   useEffect(() => {
-    fetch("http://localhost:3000/turfs")
+    fetch("https://play-pulse-ivory.vercel.app/turfs")
       .then((res) => res.json())
       .then(setTurfs)
       .catch(console.error);
@@ -19,15 +19,18 @@ const TurfList = () => {
   // Booking handler
   const handleBooking = async (turfId, slot, date) => {
     try {
-      const res = await fetch(`http://localhost:3000/turfs/${turfId}/book`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slot,
-          user: user?.email || "guest@example.com",
-          date,
-        }),
-      });
+      const res = await fetch(
+        `https://play-pulse-ivory.vercel.app/turfs/${turfId}/book`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slot,
+            user: user?.email || "guest@example.com",
+            date,
+          }),
+        }
+      );
 
       if (!res.ok) {
         const err = await res.json();
@@ -66,9 +69,12 @@ const TurfList = () => {
               />
               <div className="p-4 flex flex-col justify-between flex-1">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800">{turf.name}</h2>
+                  <h2 className="text-xl font-bold text-gray-800">
+                    {turf.name}
+                  </h2>
                   <p className="text-gray-600 text-sm flex items-center">
-                    <AddLocationIcon className="text-red-600 mr-1" /> {turf.location}
+                    <AddLocationIcon className="text-red-600 mr-1" />{" "}
+                    {turf.location}
                   </p>
                   <p className="text-green-600 font-semibold mt-1">
                     {turf.price} BDT / hour
