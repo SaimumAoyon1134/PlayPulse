@@ -78,7 +78,11 @@ const fetchMatches = async () => {
   }
 };
 useEffect(() => {
-  fetchMatches();
+  const int = setInterval(() => {
+    fetchMatches();
+  }, 1000); 
+
+  return () => clearInterval(int);
 }, []);
   useEffect(() => {
     const fetchPosts = async () => {

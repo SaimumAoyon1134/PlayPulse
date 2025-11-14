@@ -31,31 +31,33 @@ const MatchManagement = ({ match, goBack }) => {
   };
 
 
-  const handleSaveStats = async () => {
-    try {
-      setSaving(true);
+ const handleSaveStats = async () => {
+  try {
+    setSaving(true);
 
-      const res = await fetch(`http://localhost:3000/matches/${match._id}/stats`, {
+    const res = await fetch(
+      `http://localhost:3000/matches/${match._id}/stats`,
+      {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stats }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert("Failed to save stats.");
-        console.error(data);
-      } else {
-        alert("Stats saved!");
       }
-    } catch (err) {
-      console.error("Save stats error:", err);
-      alert("Error saving stats.");
-    } finally {
-      setSaving(false);
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Stats saved & players updated!");
+    } else {
+      alert("Failed to save stats.");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Error saving stats.");
+  } finally {
+    setSaving(false);
+  }
+};
 
  
   const handleEndMatch = async () => {

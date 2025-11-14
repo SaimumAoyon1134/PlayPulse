@@ -572,6 +572,84 @@ async function run() {
         res.status(500).json({ message: "Failed to end match" });
       }
     });
+
+
+    app.patch("/matches/:id/stats", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { stats } = req.body;
+
+    if (!stats) {
+      return res.status(400).json({ message: "Stats object missing" });
+    }
+
+    const match = await matchesCollection.findOne({ _id: new ObjectId(id) });
+    if (!match) return res.status(404).json({ message: "Match not found" });
+
+    // Save match stats to match record
+    await matchesCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { stats } }
+    );
+
+    // -= PLAYER UPDATES =-
+
+    const updatePlayer = async (playerId, updates) => {
+      await playersCollection.updateOne(
+        { _id: new ObjectId(playerId) },
+        { $inc: updates }
+      );
+    };
+
+    // Update goals / fouls for each team
+    for (let p of match.teamA) {
+      await updatePlayer(p._id, {
+        goals: stats.teamAGoals,
+        fouls: stats.teamAFouls,
+        matchesPlayed: 1,
+      });
+    }
+
+    for (let p of match.teamB) {
+      await updatePlayer(p._id, {
+        goals: stats.teamBGoals,
+        fouls: stats.teamBFouls,
+        matchesPlayed: 1,
+      });
+    }
+
+    // Wins / losses
+    let winner = null;
+    if (stats.teamAScore > stats.teamBScore) winner = "A";
+    else if (stats.teamBScore > stats.teamAScore) winner = "B";
+
+    if (winner) {
+      if (winner === "A") {
+        for (let p of match.teamA) await updatePlayer(p._id, { wins: 1 });
+        for (let p of match.teamB) await updatePlayer(p._id, { losses: 1 });
+      } else {
+        for (let p of match.teamB) await updatePlayer(p._id, { wins: 1 });
+        for (let p of match.teamA) await updatePlayer(p._id, { losses: 1 });
+      }
+    }
+
+    // Recalculate rank for all players (win %)
+    const allPlayers = await playersCollection.find().toArray();
+    for (let p of allPlayers) {
+      const total = p.wins + p.losses;
+      const rank = total > 0 ? (p.wins / total) * 100 : 0;
+      await playersCollection.updateOne(
+        { _id: p._id },
+        { $set: { rank } }
+      );
+    }
+
+    res.json({ success: true, message: "Match & player stats updated" });
+  } catch (err) {
+    console.error("Stats update error:", err);
+    res.status(500).json({ message: "Failed to update stats" });
+  }
+});
     // Ping test
     // await client.db("admin").command({ ping: 1 });
     // console.log("✅ MongoDB connected!");
