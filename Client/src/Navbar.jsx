@@ -13,6 +13,7 @@ import CampaignIcon from "@mui/icons-material/Campaign";
 import AddIcon from "@mui/icons-material/Add";
 import GroupIcon from "@mui/icons-material/Group";
 import Groups3Icon from "@mui/icons-material/Groups3";
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 
 const Navbar = () => {
   const active =
@@ -132,6 +133,28 @@ const Navbar = () => {
           >
             <Groups3Icon />
             Create a Match
+          </NavLink>
+        </li>
+      )}
+         {user && (
+        <li>
+          <NavLink
+            to="/ongoingmatch"
+            className={({ isActive }) => (isActive ? active : inActive)}
+          >
+            <AutoAwesomeMotionIcon/>
+            Waiting Match
+          </NavLink>
+        </li>
+      )}
+      {user && (
+        <li>
+          <NavLink
+            to="/mylive"
+            className={({ isActive }) => (isActive ? active : inActive)}
+          >
+            <AutoAwesomeMotionIcon/>
+            Live Match
           </NavLink>
         </li>
       )}

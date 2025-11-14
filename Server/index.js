@@ -430,7 +430,7 @@ async function run() {
       }
     });
 
-    // ✅ POST — Create booking
+    //  POST — Create booking
     app.post("/bookings", async (req, res) => {
       try {
         const booking = req.body;
@@ -446,7 +446,7 @@ async function run() {
       }
     });
 
-    // ✅ GET — Fetch all bookings (for admin later)
+    //  GET — Fetch all bookings (for admin later)
     app.get("/bookings", async (req, res) => {
       try {
         const bookings = await bookingsCollection
@@ -491,11 +491,9 @@ async function run() {
         }
 
         if (teamA.length !== teamSize || teamB.length !== teamSize) {
-          return res
-            .status(400)
-            .json({
-              message: `Both teams must have exactly ${teamSize} players`,
-            });
+          return res.status(400).json({
+            message: `Both teams must have exactly ${teamSize} players`,
+          });
         }
 
         const matchDateTime = new Date(`${matchDate}T${matchTime}:00`);
@@ -511,6 +509,9 @@ async function run() {
           matchDuration,
           matchDateTime,
           createdAt: new Date(),
+
+          isLive: false,
+          isFinished: false,
         };
 
         const result = await matchesCollection.insertOne(newMatch);
@@ -530,6 +531,47 @@ async function run() {
         res.status(500).json({ message: "Failed to fetch matches" });
       }
     });
+
+    app.patch("/matches/start/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const now = new Date();
+
+        const result = await matchesCollection.updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              isLive: true,
+              matchDateTime: now,
+            },
+          }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ message: "Match not found" });
+        }
+
+        res.json({ message: "Match started", success: true });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to start match" });
+      }
+    });
+    app.patch("/matches/:id/end", async (req, res) => {
+      try {
+        const id = req.params.id;
+
+        const result = await matchesCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { isLive: false, isFinished: true } }
+        );
+
+        res.json({ message: "Match ended", success: true });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to end match" });
+      }
+    });
     // Ping test
     // await client.db("admin").command({ ping: 1 });
     // console.log("✅ MongoDB connected!");
@@ -543,11 +585,11 @@ run().catch(console.dir);
 // mongoose
 //   .connect(uri)
 //   .then(() => {
-   
+
 //   })
 //   .catch((err) => console.error("MongoDB connection error:", err));
 
 // module.exports = app;
- app.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`);
-    });
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+});

@@ -1,10 +1,16 @@
- import React, { useContext } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Recent = () => {
   const { recent } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   if (!recent) return <div className="text-center py-10 text-lg">Loading...</div>;
+
+  const handleViewSummary = (matchId) => {
+    navigate(`/match/${matchId}/summary`); 
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-2">
@@ -45,7 +51,10 @@ const Recent = () => {
               </div>
 
               <div className="mt-5 text-center">
-                <button className="bg-gradient-to-r from-green-500 to-emerald-600  text-white font-semibold px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform duration-200">
+                <button
+                  onClick={() => handleViewSummary(match._id)}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform duration-200"
+                >
                   View Summary
                 </button>
               </div>

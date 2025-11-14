@@ -17,6 +17,9 @@ import PlayerSection from "./PlayerSection.jsx";
 import TeamCreate from "./TeamCreate.jsx";
 import AdminPanel from "./AdminPanel.jsx";
 import AdminMatchTable from "./AdminMatchTable.jsx";
+import OnGoingMatch from "./OnGoingMatch.jsx";
+import MatchManagement from "./MatchManagement.jsx";
+import MyLive from "./MyLive.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,13 +31,16 @@ const router = createBrowserRouter([
       { path: "register", element: <Register /> },
       { path: "myprofile", element: <MyProfile /> },
       { path: "manage-announcement", element: <ManageAnnouncement /> },
-      { path: "turf", element: <Turf/> },
-      { path: "addturf", element: <AddTurf/> },
-      { path: "mybookings", element: <MyBookings/> },
-      { path: "addplayer", element:<PlayerSection/> },
-      { path: "teamcreate", element: <TeamCreate/> },
-      { path:"/admin" ,element:<AdminPanel />} ,
-      { path:"/adminmatchtable" ,element:<AdminMatchTable/>} 
+      { path: "turf", element: <Turf /> },
+      { path: "addturf", element: <AddTurf /> },
+      { path: "mybookings", element: <MyBookings /> },
+      { path: "addplayer", element: <PlayerSection /> },
+      { path: "teamcreate", element: <TeamCreate /> },
+      { path: "/admin", element: <AdminPanel /> },
+      { path: "/adminmatchtable", element: <AdminMatchTable /> },
+      { path: "/ongoingmatch", element: <OnGoingMatch /> },
+      { path: "/match/:id", element: <MatchManagement /> },
+      { path: "/mylive", element: <MyLive/> },
     ],
   },
 ]);

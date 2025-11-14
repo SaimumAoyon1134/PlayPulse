@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import { AuthContext } from "./AuthContext";
@@ -22,38 +22,64 @@ const AuthProvider = ({ children }) => {
   const [upcoming, setUpcoming] = useState([]);
   const [live, setLive] = useState([]);
   const [recent, setRecent] = useState([]);
+  const [ongoing, setOngoing] = useState([]);
+  const [players, setPlayers] = useState([]);
 
-  useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const res = await fetch("https://play-pulse-ivory.vercel.app/matches");
-        const data = await res.json();
-        const now = new Date();
+useEffect(() => {
+  const fetchPlayers = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/players");
+      const data = await res.json();
+      setPlayers(data); 
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  fetchPlayers();
+}, []);
 
-        const upcomingMatches = [];
-        const liveMatches = [];
-        const recentMatches = [];
+const fetchMatches = async () => {
+  try {
+    const res = await fetch("https://play-pulse-ivory.vercel.app/matches");
+    const data = await res.json();
+    console.log(data)
+    const now = new Date();
 
-        data.forEach((m) => {
-          const start = new Date(`${m.matchDate}T${m.matchTime}`);
-          const end = new Date(start.getTime() + m.matchDuration * 60000);
+    const upcomingMatches = [];
+    const liveMatches = [];
+    const recentMatches = [];
+    const ongoingToStart = []; 
 
-          if (now < start) upcomingMatches.push(m);
-          else if (now >= start && now <= end) liveMatches.push(m);
-          else recentMatches.push(m);
-        });
+    
 
-        setUpcoming(upcomingMatches);
-        setLive(liveMatches);
-        setRecent(recentMatches);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+    data.forEach((m) => {
+  const start = new Date(`${m.matchDate}T${m.matchTime}`);
+  const end = new Date(start.getTime() + m.matchDuration * 60000);
+  const now = new Date();
 
-    fetchMatches();
-  }, []);
+  if (m.isLive) {
+    liveMatches.push(m);
+  } else if (m.isFinished) {
+    recentMatches.push(m);
+  } else if (now < start) {
+    upcomingMatches.push(m);
+  } else {
+    ongoingToStart.push(m);
+  }
+});
 
+    setUpcoming(upcomingMatches);
+    setLive(liveMatches);
+    setRecent(recentMatches);
+    setOngoing(ongoingToStart); 
+  } catch (err) {
+    console.error(err);
+    setInterval(fetchMatches, 1000);
+  }
+};
+useEffect(() => {
+  fetchMatches();
+}, []);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -148,6 +174,12 @@ const AuthProvider = ({ children }) => {
     upcoming,
     live,
     recent,
+    ongoing, 
+    setLive,
+    setOngoing,     
+    fetchMatches, 
+    players,
+    setRecent,
   };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
