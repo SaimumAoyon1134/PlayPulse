@@ -7,34 +7,43 @@ const OngoingMatches = () => {
   const [loadingMatchId, setLoadingMatchId] = useState(null);
   const navigate = useNavigate(); 
   const handleStartMatch = async (matchId) => {
-    try {
-      setLoadingMatchId(matchId);
+  try {
+    setLoadingMatchId(matchId);
 
-      const res = await fetch(
-        `http://localhost:3000/matches/start/${matchId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.success) {
-       
-        const match = ongoing.find((m) => m._id === matchId);
-        setOngoing((prev) => prev.filter((m) => m._id == matchId));
-        setLive((prev) => [...prev, match]);
-
-       
-        navigate(`/match/${matchId}`);
+    const res = await fetch(
+      `http://localhost:3000/matches/start/${matchId}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
       }
-    } catch (err) {
-      console.error("Failed to start match:", err);
-    } finally {
-      setLoadingMatchId(null);
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      // Safely find match
+      const match = ongoing.find((m) => m._id === matchId);
+
+      if (!match) {
+        console.error("Match not found in ongoing:", matchId);
+        return;
+      }
+
+      // Remove from waiting
+      setOngoing((prev) => prev.filter((m) => m._id !== matchId));
+
+      // Add to live
+      setLive((prev) => [...prev, match]);
+
+      // Do NOT navigate
+      // MatchManagement now opens from MyLive context, not route
     }
-  };
+  } catch (err) {
+    console.error("Failed to start match:", err);
+  } finally {
+    setLoadingMatchId(null);
+  }
+};
 
   return (
     <div className="p-5 max-w-3xl mx-auto">

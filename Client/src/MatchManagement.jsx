@@ -1,167 +1,225 @@
-import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "./AuthContext";
+import React, { useEffect, useState } from "react";
 
-const MatchManagement = () => {
-  const { live, fetchMatches } = useContext(AuthContext);
-  const [matchData, setMatchData] = useState({}); 
-  const [loadingMatchId, setLoadingMatchId] = useState(null);
+
+const MatchManagement = ({ match, goBack }) => {
+  const [stats, setStats] = useState({
+    teamAScore: 0,
+    teamBScore: 0,
+    teamAGoals: 0,
+    teamBGoals: 0,
+    teamAFouls: 0,
+    teamBFouls: 0,
+  });
+
+  const [saving, setSaving] = useState(false);
+  const [ending, setEnding] = useState(false);
 
   useEffect(() => {
-    fetchMatches();
-  }, []);
-
-  useEffect(() => {
-   
-    const initData = {};
-    live.forEach((m) => {
-      initData[m._id] = {
-        teamAScore: 0,
-        teamBScore: 0,
-        teamAGoals: 0,
-        teamBGoals: 0,
-        teamAFouls: 0,
-        teamBFouls: 0,
-      };
+    
+    setStats({
+      teamAScore: 0,
+      teamBScore: 0,
+      teamAGoals: 0,
+      teamBGoals: 0,
+      teamAFouls: 0,
+      teamBFouls: 0,
     });
-    setMatchData(initData);
-  }, [live]);
+  }, [match]);
 
-  const handleChange = (matchId, field, value) => {
-    setMatchData((prev) => ({
-      ...prev,
-      [matchId]: { ...prev[matchId], [field]: Number(value) },
-    }));
+  const handleChange = (field, value) => {
+    setStats((s) => ({ ...s, [field]: Number(value) }));
   };
 
-  const handleEndMatch = async (matchId) => {
+
+  const handleSaveStats = async () => {
     try {
-      setLoadingMatchId(matchId);
-      const res = await fetch(
-        `https://play-pulse-ivory.vercel.app/matches/${matchId}/end`,
-        { method: "PATCH" }
-      );
+      setSaving(true);
+
+      const res = await fetch(`http://localhost:3000/matches/${match._id}/stats`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stats }),
+      });
+
       const data = await res.json();
-      if (data.success) {
-        alert("Match ended successfully!");
-        fetchMatches();
+
+      if (!res.ok) {
+        alert("Failed to save stats.");
+        console.error(data);
+      } else {
+        alert("Stats saved!");
       }
     } catch (err) {
-      console.error("Failed to end match:", err);
+      console.error("Save stats error:", err);
+      alert("Error saving stats.");
     } finally {
-      setLoadingMatchId(null);
+      setSaving(false);
     }
   };
 
+ 
+  const handleEndMatch = async () => {
+    try {
+      setEnding(true);
+
+      const res = await fetch(`http://localhost:3000/matches/${match._id}/end`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Match ended.");
+        goBack(); // return to Live list
+      } else {
+        alert("Failed to end match.");
+        console.error(data);
+      }
+    } catch (err) {
+      console.error("End match error:", err);
+      alert("Error ending match.");
+    } finally {
+      setEnding(false);
+    }
+  };
+
+  const formatPlayers = (arr) => {
+    if (!Array.isArray(arr)) return "";
+    return arr.join(", ");
+  };
+
   return (
-    <div className="p-5 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Live Match Management</h2>
-      {live.length === 0 ? (
-        <p>No live matches currently.</p>
-      ) : (
-        live.map((m) => (
-          <div
-            key={m._id}
-            className="border p-4 rounded-lg shadow mb-4 bg-white"
+    <div className="bg-white p-6 rounded-lg shadow-md">
+     
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-2xl font-bold">
+            Managing: {match.teamAName} vs {match.teamBName}
+          </h2>
+          <p className="text-sm text-gray-600">
+            {match.matchDate} — {match.matchTime} ({match.matchDuration} min)
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={goBack}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
           >
-            <h3 className="text-lg font-semibold mb-2">
-              {m.teamAName} vs {m.teamBName}
-            </h3>
-            <p className="text-sm text-gray-600">
-              Date: {m.matchDate} — Time: {m.matchTime}
-            </p>
+            ← Back
+          </button>
 
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-semibold">{m.teamAName} Stats</h4>
-                <p>Players: {m.teamA.join(", ")}</p>
-                <label>
-                  Score:
-                  <input
-                    type="number"
-                    value={matchData[m._id]?.teamAScore || 0}
-                    onChange={(e) =>
-                      handleChange(m._id, "teamAScore", e.target.value)
-                    }
-                    className="border ml-2 p-1 w-20"
-                  />
-                </label>
-                <br />
-                <label>
-                  Goals:
-                  <input
-                    type="number"
-                    value={matchData[m._id]?.teamAGoals || 0}
-                    onChange={(e) =>
-                      handleChange(m._id, "teamAGoals", e.target.value)
-                    }
-                    className="border ml-2 p-1 w-20"
-                  />
-                </label>
-                <br />
-                <label>
-                  Fouls:
-                  <input
-                    type="number"
-                    value={matchData[m._id]?.teamAFouls || 0}
-                    onChange={(e) =>
-                      handleChange(m._id, "teamAFouls", e.target.value)
-                    }
-                    className="border ml-2 p-1 w-20"
-                  />
-                </label>
-              </div>
+          <button
+            onClick={handleSaveStats}
+            disabled={saving}
+            className={`px-3 py-1 rounded text-white ${
+              saving ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+            }`}
+          >
+            {saving ? "Saving..." : "Save Stats"}
+          </button>
 
-              <div>
-                <h4 className="font-semibold">{m.teamBName} Stats</h4>
-                <p>Players: {m.teamB.join(", ")}</p>
-                <label>
-                  Score:
-                  <input
-                    type="number"
-                    value={matchData[m._id]?.teamBScore || 0}
-                    onChange={(e) =>
-                      handleChange(m._id, "teamBScore", e.target.value)
-                    }
-                    className="border ml-2 p-1 w-20"
-                  />
-                </label>
-                <br />
-                <label>
-                  Goals:
-                  <input
-                    type="number"
-                    value={matchData[m._id]?.teamBGoals || 0}
-                    onChange={(e) =>
-                      handleChange(m._id, "teamBGoals", e.target.value)
-                    }
-                    className="border ml-2 p-1 w-20"
-                  />
-                </label>
-                <br />
-                <label>
-                  Fouls:
-                  <input
-                    type="number"
-                    value={matchData[m._id]?.teamBFouls || 0}
-                    onChange={(e) =>
-                      handleChange(m._id, "teamBFouls", e.target.value)
-                    }
-                    className="border ml-2 p-1 w-20"
-                  />
-                </label>
-              </div>
-            </div>
+          <button
+            onClick={handleEndMatch}
+            disabled={ending}
+            className={`px-3 py-1 rounded text-white ${
+              ending ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
+            }`}
+          >
+            {ending ? "Ending..." : "End Match"}
+          </button>
+        </div>
+      </div>
 
-            <button
-              onClick={() => handleEndMatch(m._id)}
-              disabled={loadingMatchId === m._id}
-              className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
-            >
-              {loadingMatchId === m._id ? "Ending..." : "End Match"}
-            </button>
-          </div>
-        ))
-      )}
+    
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    
+        <div className="border p-4 rounded">
+          <h4 className="font-semibold mb-2">{match.teamAName} — Players</h4>
+          <p className="text-sm text-gray-700 mb-3">
+            {formatPlayers(match.teamA)}
+          </p>
+
+          <label className="block mb-2">
+            Score:
+            <input
+              type="number"
+              value={stats.teamAScore}
+              onChange={(e) => handleChange("teamAScore", e.target.value)}
+              className="border ml-2 p-1 w-24"
+            />
+          </label>
+
+          <label className="block mb-2">
+            Goals:
+            <input
+              type="number"
+              value={stats.teamAGoals}
+              onChange={(e) => handleChange("teamAGoals", e.target.value)}
+              className="border ml-2 p-1 w-24"
+            />
+          </label>
+
+          <label className="block mb-2">
+            Fouls:
+            <input
+              type="number"
+              value={stats.teamAFouls}
+              onChange={(e) => handleChange("teamAFouls", e.target.value)}
+              className="border ml-2 p-1 w-24"
+            />
+          </label>
+        </div>
+
+        {/* TEAM B */}
+        <div className="border p-4 rounded">
+          <h4 className="font-semibold mb-2">{match.teamBName} — Players</h4>
+          <p className="text-sm text-gray-700 mb-3">
+            {formatPlayers(match.teamB)}
+          </p>
+
+          <label className="block mb-2">
+            Score:
+            <input
+              type="number"
+              value={stats.teamBScore}
+              onChange={(e) => handleChange("teamBScore", e.target.value)}
+              className="border ml-2 p-1 w-24"
+            />
+          </label>
+
+          <label className="block mb-2">
+            Goals:
+            <input
+              type="number"
+              value={stats.teamBGoals}
+              onChange={(e) => handleChange("teamBGoals", e.target.value)}
+              className="border ml-2 p-1 w-24"
+            />
+          </label>
+
+          <label className="block mb-2">
+            Fouls:
+            <input
+              type="number"
+              value={stats.teamBFouls}
+              onChange={(e) => handleChange("teamBFouls", e.target.value)}
+              className="border ml-2 p-1 w-24"
+            />
+          </label>
+        </div>
+      </div>
+
+      {/* SUMMARY BOX */}
+      <div className="mt-6 bg-gray-50 p-3 rounded text-sm">
+        <strong>{match.teamAName}</strong> — Score: {stats.teamAScore} | Goals:{" "}
+        {stats.teamAGoals} | Fouls: {stats.teamAFouls}
+        <br />
+        <strong>{match.teamBName}</strong> — Score: {stats.teamBScore} | Goals:{" "}
+        {stats.teamBGoals} | Fouls: {stats.teamBFouls}
+      </div>
     </div>
   );
 };

@@ -1,111 +1,13 @@
-// import React, { useContext, useEffect, useState } from "react";
-// import { AuthContext } from "./AuthContext";
-// import { useNavigate } from "react-router-dom";
-
-// const MyLive = () => {
-//   const { live, setLive, setRecent } = useContext(AuthContext);
-//   const [loadingMatchId, setLoadingMatchId] = useState(null);
-//   const navigate = useNavigate();
-
- 
-//   const handleEndMatch = async (matchId) => {
-//   try {
-//     setLoadingMatchId(matchId);
-
-//     const res = await fetch(`http://localhost:3000/matches/${matchId}/end`, {
-//       method: "PATCH",
-//       headers: { "Content-Type": "application/json" },
-//     });
-
-//     const data = await res.json();
-
-//     if (data.success) {
-//       // Find the match first
-//       const endedMatch = live.find((m) => m._id === matchId);
-//       if (!endedMatch) return;
-
-//       // Update live and recent
-//       setLive((prev) => prev.filter((m) => m._id !== matchId));
-//       setRecent((prev) => [
-//         ...prev,
-//         { ...endedMatch, isLive: false, isFinished: true },
-//       ]);
-//     }
-//   } catch (err) {
-//     console.error("Failed to end match:", err);
-//   } finally {
-//     setLoadingMatchId(null);
-//   }
-// };
-
-//   // Navigate to match management
-//   const handleManageMatch = (matchId) => {
-//     navigate(`/match/${matchId}`);
-//   };
-
-//   return (
-//     <div className="p-5 max-w-4xl mx-auto">
-//       <h2 className="text-2xl font-semibold mb-4">Live Matches</h2>
-
-//       {live.length === 0 ? (
-//         <p className="text-gray-500">No live matches currently.</p>
-//       ) : (
-//         <div className="space-y-4">
-//           {live.map((m) => (
-//             <div
-//               key={m._id}
-//               className="border p-4 rounded-lg shadow-sm bg-white flex justify-between items-center"
-//             >
-//               <div>
-//                 <h3 className="text-lg font-bold">
-//                   {m.teamAName} vs {m.teamBName}
-//                 </h3>
-//                 <p className="text-sm text-gray-600">
-//                   {m.matchDate} — {m.matchTime}
-//                 </p>
-//                 <p className="text-sm text-gray-600">
-//                   Duration: {m.matchDuration} min
-//                 </p>
-//                 <p className="text-sm text-green-600 font-semibold">Live</p>
-//               </div>
-
-//               <div className="flex gap-2">
-//                 <button
-//                   onClick={() => handleEndMatch(m._id)}
-//                   disabled={loadingMatchId === m._id}
-//                   className={`px-4 py-2 rounded-lg text-white bg-red-600 hover:bg-red-700 ${
-//                     loadingMatchId === m._id ? "bg-gray-400 cursor-not-allowed" : ""
-//                   }`}
-//                 >
-//                   {loadingMatchId === m._id ? "Ending..." : "End Match"}
-//                 </button>
-
-//                 <button
-//                   onClick={() => handleManageMatch(m._id)}
-//                   className="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700"
-//                 >
-//                   Manage
-//                 </button>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default MyLive;
 import React, { useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { useNavigate } from "react-router-dom";
+import MatchManagement from "./MatchManagement";
 
 const MyLive = () => {
-  const { live, setLive, setRecent } = useContext(AuthContext);
+  const { live, setLive, setRecent, fetchMatches } = useContext(AuthContext);
   const [loadingMatchId, setLoadingMatchId] = useState(null);
-  const navigate = useNavigate();
+  const [selectedMatch, setSelectedMatch] = useState(null);
 
-  // End match and move to recent
+  // End match and move to recent (backend + local state)
   const handleEndMatch = async (matchId) => {
     try {
       setLoadingMatchId(matchId);
@@ -114,19 +16,20 @@ const MyLive = () => {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
       });
+
       const data = await res.json();
 
       if (data.success) {
-        // Find the match first
-        const endedMatch = live.find((m) => m._id === matchId);
-        if (!endedMatch) return;
-
-        // Update live and recent
-        setLive((prev) => prev.filter((m) => m._id !== matchId));
-        setRecent((prev) => [
-          ...prev,
-          { ...endedMatch, isLive: false, isFinished: true },
-        ]);
+        // optimistic local update
+        const ended = live.find((m) => m._id === matchId);
+        if (ended) {
+          setLive((prev) => prev.filter((m) => m._id !== matchId));
+          setRecent((prev) => [...prev, { ...ended, isLive: false, isFinished: true }]);
+        }
+        // refresh from server if you want canonical data
+        if (fetchMatches) fetchMatches();
+      } else {
+        console.error("Failed ending match:", data);
       }
     } catch (err) {
       console.error("Failed to end match:", err);
@@ -135,16 +38,34 @@ const MyLive = () => {
     }
   };
 
-  // Navigate to MatchManagement page for this specific match
-  const handleManageMatch = (matchId) => {
-    navigate(`/match/${matchId}`);
+  // When Manage is clicked, display MatchManagement inline for that match
+  const handleManage = (match) => {
+    setSelectedMatch(match);
   };
+
+  const handleCloseManagement = () => {
+    setSelectedMatch(null);
+    // refresh after closing (optional)
+    if (fetchMatches) fetchMatches();
+  };
+
+  // If a match is selected, show MatchManagement only for that match
+  if (selectedMatch) {
+    return (
+      <div className="p-5 max-w-4xl mx-auto">
+        <MatchManagement
+          match={selectedMatch}
+          goBack={handleCloseManagement}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-5 max-w-4xl mx-auto">
       <h2 className="text-2xl font-semibold mb-4">Live Matches</h2>
 
-      {live.length === 0 ? (
+      {(!live || live.length === 0) ? (
         <p className="text-gray-500">No live matches currently.</p>
       ) : (
         <div className="space-y-4">
@@ -170,15 +91,15 @@ const MyLive = () => {
                 <button
                   onClick={() => handleEndMatch(m._id)}
                   disabled={loadingMatchId === m._id}
-                  className={`px-4 py-2 rounded-lg text-white bg-red-600 hover:bg-red-700 ${
-                    loadingMatchId === m._id ? "bg-gray-400 cursor-not-allowed" : ""
+                  className={`px-4 py-2 rounded-lg text-white ${
+                    loadingMatchId === m._id ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
                   }`}
                 >
                   {loadingMatchId === m._id ? "Ending..." : "End Match"}
                 </button>
 
                 <button
-                  onClick={() => handleManageMatch(m._id)}
+                  onClick={() => handleManage(m)}
                   className="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700"
                 >
                   Manage
