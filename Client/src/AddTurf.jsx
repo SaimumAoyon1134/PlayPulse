@@ -38,11 +38,14 @@ const AddTurf = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/turfs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(turf),
-      });
+      const res = await fetch(
+        "https://playpulse-production.up.railway.app/turfs",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(turf),
+        }
+      );
       const data = await res.json();
       console.log("Turf added:", data);
       alert("Turf added successfully!");

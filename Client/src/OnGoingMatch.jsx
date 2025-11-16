@@ -25,7 +25,7 @@ const OngoingMatches = () => {
       setLoadingMatchId(matchId);
 
       const res = await fetch(
-        `http://localhost:3000/matches/start/${matchId}`,
+        `https://playpulse-production.up.railway.app/matches/start/${matchId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

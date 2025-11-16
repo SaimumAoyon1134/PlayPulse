@@ -17,7 +17,9 @@ const PlayerSection = () => {
   const fetchPlayers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:3000/players");
+      const res = await axios.get(
+        "https://playpulse-production.up.railway.app/players"
+      );
       const playersData = res.data.map((player) => {
         const totalScore =
           player.stats.goals * 4 +
@@ -36,7 +38,6 @@ const PlayerSection = () => {
     }
   };
 
-  
   const handleSearch = (value) => {
     setSearchText(value);
     const filtered = players.filter((player) =>
@@ -44,7 +45,6 @@ const PlayerSection = () => {
     );
     setFilteredPlayers(filtered);
   };
-
 
   const handleSort = (type) => {
     setSortType(type);
@@ -61,8 +61,6 @@ const PlayerSection = () => {
 
   return (
     <div className="p-6">
-     
-
       {/* SEARCH + SORT SECTION */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         {/* Search */}
@@ -124,7 +122,9 @@ const PlayerSection = () => {
                       className="w-12 h-12 rounded-full border"
                     />
                   </td>
-                  <td className="p-3 font-medium text-gray-800">{player.name}</td>
+                  <td className="p-3 font-medium text-gray-800">
+                    {player.name}
+                  </td>
                   <td className="p-3 text-gray-600">{player.category}</td>
                   <td className="p-3 text-green-600 font-bold">
                     {player.stats.goals}

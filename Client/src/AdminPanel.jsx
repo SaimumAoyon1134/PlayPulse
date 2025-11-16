@@ -9,7 +9,9 @@ const AdminPanel = () => {
 
   const fetchBookings = async () => {
     try {
-      const res = await fetch("http://localhost:3000/admin/bookings");
+      const res = await fetch(
+        "https://playpulse-production.up.railway.app/admin/bookings"
+      );
       const data = await res.json();
       console.log(data);
       setBookings(data);
@@ -27,7 +29,7 @@ const AdminPanel = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/admin/bookings/${id}/cancel`,
+        `https://playpulse-production.up.railway.app/admin/bookings/${id}/cancel`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

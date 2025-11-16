@@ -72,9 +72,9 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
   const handleSlotBooking = async (slot) => {
     if (!user?.email) {
       Toast.fire({
-  icon: "error",
-  title: "You Must Login To Book."
-});
+        icon: "error",
+        title: "You Must Login To Book.",
+      });
       return;
     }
 
@@ -100,11 +100,14 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
         };
 
         // Save booking in MongoDB (bookings collection)
-        const res = await fetch("http://localhost:3000/bookings", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bookingData),
-        });
+        const res = await fetch(
+          "https://playpulse-production.up.railway.app/bookings",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bookingData),
+          }
+        );
 
         const data = await res.json();
 
@@ -166,7 +169,7 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
 
         {/* Date Picker */}
         <div className="mb-3">
-          <label className="font-semibold mr-2">Select Date:</label>
+          <label className="font-semibold mr-2 text-gray-700">Select Date:</label>
           <input
             type="date"
             className="border rounded px-2 py-1"

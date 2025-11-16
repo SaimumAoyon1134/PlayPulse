@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 const ShowAnnouncement = ({ announcements, setAnnouncements }) => {
   const fetchAnnouncements = async () => {
     try {
-      const res = await fetch("http://localhost:3000/announcement");
+      const res = await fetch(
+        "https://playpulse-production.up.railway.app/announcement"
+      );
       const data = await res.json();
       setAnnouncements(data);
     } catch (err) {
@@ -13,9 +15,12 @@ const ShowAnnouncement = ({ announcements, setAnnouncements }) => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://localhost:3000/announcement/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `https://playpulse-production.up.railway.app/announcement/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
       if (data.deletedCount) {
         console.log("Deleted successfully");

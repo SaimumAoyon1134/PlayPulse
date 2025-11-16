@@ -25,12 +25,14 @@ const AuthProvider = ({ children }) => {
 
   const socketRef = useRef(null);
 
- const [posts, setPosts] = useState([]); // <-- add this
+  const [posts, setPosts] = useState([]); // <-- add this
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch("http://localhost:3000/post");
+        const res = await fetch(
+          "https://playpulse-production.up.railway.app/post"
+        );
         const data = await res.json();
         setPosts(data);
       } catch (err) {
@@ -40,13 +42,12 @@ const AuthProvider = ({ children }) => {
     fetchPosts();
   }, []);
 
-
   useEffect(() => {
-    
-    socketRef.current = io("http://localhost:3000", { transports: ["websocket"] });
+    socketRef.current = io("http://localhost:3000", {
+      transports: ["websocket"],
+    });
     const socket = socketRef.current;
 
-    
     socket.on("match-start", (match) => {
       setLive((prev) => [...prev, match]);
       setUpcoming((prev) => prev.filter((m) => m._id !== match._id));
@@ -54,7 +55,9 @@ const AuthProvider = ({ children }) => {
 
     // Match updated (stats etc.)
     socket.on("match-update", (match) => {
-      setLive((prev) => prev.map((m) => (m._id === match._id ? { ...m, ...match } : m)));
+      setLive((prev) =>
+        prev.map((m) => (m._id === match._id ? { ...m, ...match } : m))
+      );
     });
 
     // Match ended
@@ -75,7 +78,9 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await fetch("http://localhost:3000/players");
+        const res = await fetch(
+          "https://playpulse-production.up.railway.app/players"
+        );
         const data = await res.json();
         setPlayers(data);
       } catch (err) {
@@ -85,11 +90,12 @@ const AuthProvider = ({ children }) => {
     fetchPlayers();
   }, []);
 
-
   const fetchMatches = async () => {
     try {
       // setIsLoading(true);
-      const res = await fetch("http://localhost:3000/matches");
+      const res = await fetch(
+        "https://playpulse-production.up.railway.app/matches"
+      );
       const data = await res.json();
 
       const upcomingArr = [];
@@ -107,22 +113,21 @@ const AuthProvider = ({ children }) => {
       setRecent(recentArr);
     } catch (err) {
       console.error("Failed to fetch matches:", err);
+    } finally {
     }
-     finally {
-    
-  }
   };
 
   useEffect(() => {
     fetchMatches();
-    const interval = setInterval(fetchMatches, 500); 
+    const interval = setInterval(fetchMatches, 500);
     return () => clearInterval(interval);
   }, []);
 
+  const signUp = (email, password) =>
+    createUserWithEmailAndPassword(auth, email, password);
 
-  const signUp = (email, password) => createUserWithEmailAndPassword(auth, email, password);
-
-  const signIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
+  const signIn = (email, password) =>
+    signInWithEmailAndPassword(auth, email, password);
 
   const googleSignIn = async () => {
     setIsLoading(true);
@@ -144,7 +149,10 @@ const AuthProvider = ({ children }) => {
     if (!auth.currentUser) return;
     setIsLoading(true);
     try {
-      await updateProfile(auth.currentUser, { displayName: name, photoURL: image });
+      await updateProfile(auth.currentUser, {
+        displayName: name,
+        photoURL: image,
+      });
       setUser({ ...auth.currentUser });
     } catch (err) {
       console.error("Failed to update profile:", err);
@@ -152,7 +160,6 @@ const AuthProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
-
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
@@ -162,7 +169,6 @@ const AuthProvider = ({ children }) => {
     return () => unsub();
   }, []);
 
-  
   const authInfo = {
     user,
     isLoading,
@@ -178,12 +184,13 @@ const AuthProvider = ({ children }) => {
     fetchMatches,
     players,
     setUpcoming,
-    posts, 
+    posts,
     setPosts,
-
   };
 
-  return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

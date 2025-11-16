@@ -9,7 +9,9 @@ const AdminMatchTable = () => {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/matches");
+        const res = await axios.get(
+          "https://playpulse-production.up.railway.app/matches"
+        );
         const now = new Date();
 
         const matchesWithStatus = res.data.map((m) => {

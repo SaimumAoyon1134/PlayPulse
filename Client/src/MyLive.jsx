@@ -31,10 +31,13 @@ const MyLive = () => {
   const handleEndMatch = async (matchId) => {
     try {
       setEndingId(matchId);
-      const res = await fetch(`http://localhost:3000/matches/${matchId}/end`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `https://playpulse-production.up.railway.app/matches/${matchId}/end`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       const data = await res.json();
       if (data.success) {
         // refresh lists

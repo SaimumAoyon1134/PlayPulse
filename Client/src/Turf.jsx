@@ -7,33 +7,35 @@ import Loading from "./Loading";
 const TurfList = () => {
   const [turfs, setTurfs] = useState([]);
   const [selectedTurf, setSelectedTurf] = useState(null);
-  const { user, } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
-   const [loadingTurfs, setLoadingTurfs] = useState(true);
+  const [loadingTurfs, setLoadingTurfs] = useState(true);
 
   // Fetch turfs
   useEffect(() => {
-    setLoadingTurfs(true)
-    fetch("http://localhost:3000/turfs")
+    setLoadingTurfs(true);
+    fetch("https://playpulse-production.up.railway.app/turfs")
       .then((res) => res.json())
       .then(setTurfs)
       .catch(console.error)
       .finally(() => setLoadingTurfs(false));
-      
   }, []);
 
   // Booking handler
   const handleBooking = async (turfId, slot, date) => {
     try {
-      const res = await fetch(`http://localhost:3000/turfs/${turfId}/book`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slot,
-          user: user?.email || "guest@example.com",
-          date,
-        }),
-      });
+      const res = await fetch(
+        `https://playpulse-production.up.railway.app/turfs/${turfId}/book`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slot,
+            user: user?.email || "guest@example.com",
+            date,
+          }),
+        }
+      );
 
       if (!res.ok) {
         const err = await res.json();
@@ -60,7 +62,7 @@ const TurfList = () => {
         <div className="flex justify-center items-center h-64">
           <Loading />
         </div>
-      ) :turfs.length === 0 ? (
+      ) : turfs.length === 0 ? (
         <p className="text-gray-500 text-center">No turfs available</p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

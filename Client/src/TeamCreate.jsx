@@ -15,39 +15,40 @@ const CreateMatch = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [loadingp, setLoadingp]=useState(true);
+  const [loadingp, setLoadingp] = useState(true);
 
   // ✅ Added these three new states
   const [matchDate, setMatchDate] = useState("");
   const [matchTime, setMatchTime] = useState("");
   const [matchDuration, setMatchDuration] = useState(90);
 
-    const Toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-      },
-    });
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
   // Fetch all players
   useEffect(() => {
-
     const fetchPlayers = async () => {
       setLoadingp(true);
       try {
-        const res = await axios.get("http://localhost:3000/players");
+        const res = await axios.get(
+          "https://playpulse-production.up.railway.app/players"
+        );
         setPlayers(res.data);
         setLoadingp(false);
       } catch (err) {
         console.error("Failed to fetch players:", err);
         Toast.fire({
-            icon: "error",
-            title: "Failed to reload in database! Please try again.",
-          });
+          icon: "error",
+          title: "Failed to reload in database! Please try again.",
+        });
       }
     };
     fetchPlayers();
@@ -63,18 +64,17 @@ const CreateMatch = () => {
   const addPlayerToTeam = (player, team) => {
     if (team === "A") {
       if (teamA.length >= teamSize)
-      
         return Toast.fire({
-            icon: "error",
-            title: `Team A can have only ${teamSize} players`,
-          });
+          icon: "error",
+          title: `Team A can have only ${teamSize} players`,
+        });
       setTeamA([...teamA, player]);
     } else {
       if (teamB.length >= teamSize)
-         return Toast.fire({
-            icon: "error",
-            title: `Team B can have only ${teamSize} players`,
-          });
+        return Toast.fire({
+          icon: "error",
+          title: `Team B can have only ${teamSize} players`,
+        });
       setTeamB([...teamB, player]);
     }
     setModalOpen(false);
@@ -88,29 +88,25 @@ const CreateMatch = () => {
 
   const handleCreateMatch = async () => {
     if (!teamAName.trim() || !teamBName.trim())
-
-     return Toast.fire({
-            icon: "error",
-            title: `Please enter names for both teams`,
-          });
-    if (teamA.length !== teamSize || teamB.length !== teamSize)
-    
       return Toast.fire({
-            icon: "error",
-            title: `Both teams must have exactly ${teamSize} players`,
-          });
-    
-    if (!matchDate || !matchTime)
+        icon: "error",
+        title: `Please enter names for both teams`,
+      });
+    if (teamA.length !== teamSize || teamB.length !== teamSize)
+      return Toast.fire({
+        icon: "error",
+        title: `Both teams must have exactly ${teamSize} players`,
+      });
 
-    return Toast.fire({
-            icon: "error",
-            title: `Please select match date and time`,
-          });
-    
+    if (!matchDate || !matchTime)
+      return Toast.fire({
+        icon: "error",
+        title: `Please select match date and time`,
+      });
 
     try {
       setLoading(true);
-      await axios.post("http://localhost:3000/matches", {
+      await axios.post("https://playpulse-production.up.railway.app/matches", {
         teamA: teamA.map((p) => p._id),
         teamB: teamB.map((p) => p._id),
         teamAName: teamAName.trim(),
@@ -122,10 +118,10 @@ const CreateMatch = () => {
         createdAt: new Date(),
       });
       Swal.fire({
-  title: "Match Create Successfully!!!!",
-  icon: "success",
-  draggable: true
-});
+        title: "Match Create Successfully!!!!",
+        icon: "success",
+        draggable: true,
+      });
       setTeamA([]);
       setTeamB([]);
       setTeamAName("Team A");
@@ -184,9 +180,7 @@ const CreateMatch = () => {
         Create Match
       </h2> */}
 
-    
       <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
-    
         <div className="flex items-center gap-2 sm:gap-4">
           <label className="font-semibold">Team Size:</label>
           <input
@@ -199,7 +193,6 @@ const CreateMatch = () => {
           />
         </div>
 
-     
         <input
           type="text"
           placeholder="Team A Name"
@@ -276,17 +269,18 @@ const CreateMatch = () => {
         </button>
       </div>
 
-      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-       
         <div className="bg-gray-50 p-4 rounded shadow min-h-[400px] max-h-[500px] overflow-y-auto">
-          <h3 className="font-semibold p-2 bg-gradient-to-r sticky -top-4 rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">Available Players</h3>
-          {loadingp?<Loading/>:availablePlayers.length === 0 ? 
+          <h3 className="font-semibold p-2 bg-gradient-to-r sticky -top-4 rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">
+            Available Players
+          </h3>
+          {loadingp ? (
+            <Loading />
+          ) : availablePlayers.length === 0 ? (
             <p className="text-gray-400">No players available</p>
-          
-          :availablePlayers.map((p) => (
-            <PlayerCard key={p._id} player={p} />
-          ))}
+          ) : (
+            availablePlayers.map((p) => <PlayerCard key={p._id} player={p} />)
+          )}
         </div>
 
         {/* Team A */}
@@ -305,7 +299,7 @@ const CreateMatch = () => {
 
         {/* Team B */}
         <div className="bg-gray-50 p-4 rounded shadow min-h-[400px]">
-            <h3 className="font-semibold p-2 bg-gradient-to-r sticky -top-4 rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">
+          <h3 className="font-semibold p-2 bg-gradient-to-r sticky -top-4 rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">
             {teamBName} ({teamB.length}/{teamSize})
           </h3>
           {teamB.map((p) => (
@@ -354,7 +348,7 @@ const CreateMatch = () => {
                 onClick={() => setModalOpen(false)}
                 className="mt-6 text-red-500  hover:text-red-800 font-medium transition-colors"
               >
-               X Cancel
+                X Cancel
               </button>
             </div>
           </div>

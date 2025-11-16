@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import Loading from "./Loading";
-import InsertCommentIcon from '@mui/icons-material/InsertComment';
+import InsertCommentIcon from "@mui/icons-material/InsertComment";
 
 const Post = () => {
   const { user, isLoading } = useContext(AuthContext);
@@ -15,7 +15,9 @@ const Post = () => {
     const fetchPosts = async () => {
       setLoadingPosts(true);
       try {
-        const res = await fetch("http://localhost:3000/post");
+        const res = await fetch(
+          "https://playpulse-production.up.railway.app/post"
+        );
         const data = await res.json();
         setPosts(data);
       } catch (err) {
@@ -49,11 +51,14 @@ const Post = () => {
     );
 
     try {
-      await fetch(`http://localhost:3000/post/${postId}/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user: currentUser }),
-      });
+      await fetch(
+        `https://playpulse-production.up.railway.app/post/${postId}/like`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user: currentUser }),
+        }
+      );
     } catch (err) {
       console.error("Error toggling like:", err);
     }
@@ -67,11 +72,14 @@ const Post = () => {
     const comment = { text, user: user?.displayName || "Anonymous" };
 
     try {
-      await fetch(`http://localhost:3000/post/${postId}/comment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(comment),
-      });
+      await fetch(
+        `https://playpulse-production.up.railway.app/post/${postId}/comment`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(comment),
+        }
+      );
 
       setPosts((prev) =>
         prev.map((post) =>
@@ -137,43 +145,46 @@ const Post = () => {
               />
             )}
 
-            <div className="p-4 space-y-3" >
-           <div className="flex justify-between">
-               <div className="relative group inline-block">
-                <button
-                  onClick={() => handleLike(post._id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    post.likesUsers?.includes(user?.displayName)
-                      ? "text-red-600 scale-105"
-                      : "text-gray-600 hover:text-red-500"
-                  }`}
-                >
-                  <span className="text-lg">
-                    {post.likesUsers?.includes(user?.displayName) ? "❤️" : "🤍"}
-                  </span>
-                  <span className="font-medium">{post.likes || 0}</span>
-                </button>
+            <div className="p-4 space-y-3">
+              <div className="flex justify-between">
+                <div className="relative group inline-block">
+                  <button
+                    onClick={() => handleLike(post._id)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                      post.likesUsers?.includes(user?.displayName)
+                        ? "text-red-600 scale-105"
+                        : "text-gray-600 hover:text-red-500"
+                    }`}
+                  >
+                    <span className="text-lg">
+                      {post.likesUsers?.includes(user?.displayName)
+                        ? "❤️"
+                        : "🤍"}
+                    </span>
+                    <span className="font-medium">{post.likes || 0}</span>
+                  </button>
 
-                <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 ml-15 hidden group-hover:block w-max max-w-xs bg-gray-800 text-white text-xs rounded-md shadow-lg p-2 z-10">
-                  {post.likesUsers && post.likesUsers.length > 0 ? (
-                    post.likesUsers.map((u, i) => (
-                      <span key={i} className="block">
-                        • {u}
-                      </span>
-                    ))
-                  ) : (
-                    <span>No reactions yet</span>
-                  )}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 ml-15 hidden group-hover:block w-max max-w-xs bg-gray-800 text-white text-xs rounded-md shadow-lg p-2 z-10">
+                    {post.likesUsers && post.likesUsers.length > 0 ? (
+                      post.likesUsers.map((u, i) => (
+                        <span key={i} className="block">
+                          • {u}
+                        </span>
+                      ))
+                    ) : (
+                      <span>No reactions yet</span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <button
-                className="text-blue-500 font-semibold"
-                onClick={() => setOpenModalPostId(post._id)}
-              >
-                <InsertCommentIcon/>{post.comments?.length || 0} Comments
-              </button>
-           </div>
+                <button
+                  className="text-blue-500 font-semibold"
+                  onClick={() => setOpenModalPostId(post._id)}
+                >
+                  <InsertCommentIcon />
+                  {post.comments?.length || 0} Comments
+                </button>
+              </div>
 
               {/* Comment Modal */}
               {openModalPostId === post._id && (

@@ -36,11 +36,14 @@ const Home = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/post", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(postData),
-      });
+      const res = await fetch(
+        "https://playpulse-production.up.railway.app/post",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(postData),
+        }
+      );
 
       const data = await res.json();
 

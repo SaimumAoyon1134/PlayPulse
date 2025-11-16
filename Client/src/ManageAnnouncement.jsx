@@ -9,7 +9,9 @@ const ManageAnnouncement = () => {
   useEffect(() => {
     const getAnnouncements = async () => {
       try {
-        const res = await fetch("http://localhost:3000/announcement");
+        const res = await fetch(
+          "https://playpulse-production.up.railway.app/announcement"
+        );
         const data = await res.json();
         setAnnouncements(data);
       } catch (err) {
@@ -24,11 +26,14 @@ const ManageAnnouncement = () => {
     const announce = e.target.announcement.value;
 
     try {
-      const res = await fetch("http://localhost:3000/announcement", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ announcement: announce }),
-      });
+      const res = await fetch(
+        "https://playpulse-production.up.railway.app/announcement",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ announcement: announce }),
+        }
+      );
       const data = await res.json();
 
       if (data.insertedId) {
