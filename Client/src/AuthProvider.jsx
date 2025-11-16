@@ -25,6 +25,21 @@ const AuthProvider = ({ children }) => {
 
   const socketRef = useRef(null);
 
+ const [posts, setPosts] = useState([]); // <-- add this
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/post");
+        const data = await res.json();
+        setPosts(data);
+      } catch (err) {
+        console.error("Failed to fetch posts:", err);
+      }
+    };
+    fetchPosts();
+  }, []);
+
 
   useEffect(() => {
     
@@ -163,6 +178,9 @@ const AuthProvider = ({ children }) => {
     fetchMatches,
     players,
     setUpcoming,
+    posts, 
+    setPosts,
+
   };
 
   return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;

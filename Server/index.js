@@ -13,10 +13,9 @@ const { Server } = require("socket.io");
 
 app.use(cors());
 app.use(express.json());
-console.log("🚀 Starting PlayPulse Server...");
 
 const uri = process.env.MONGO_URI;
-
+console.log(uri)
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -29,8 +28,8 @@ const server = http.createServer(app);
 // SOCKET
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PATCH"],
+    origin: "*", // Allow all for Cloud Run, change to frontend URL in production
+    methods: ["GET", "POST"],
   },
 });
 
@@ -46,18 +45,18 @@ io.on("connection", (socket) => {
 app.set("io", io);
 
 // Start server
-server.listen(3000, () =>
-  console.log("Server running with Socket.io on port 3000")
-);
+// server.listen(3000, () =>
+//   console.log("Server running with Socket.io on port 3000")
+// );
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
     const db = client.db("PlayPulseDB");
     const myColl = db.collection("Announcement");
     const myPostColl = db.collection("Post");
