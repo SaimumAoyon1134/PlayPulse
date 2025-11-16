@@ -23,9 +23,7 @@ const CreateMatch = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const res = await axios.get(
-          "https://play-pulse-ivory.vercel.app/players"
-        );
+        const res = await axios.get("http://localhost:3000/players");
         setPlayers(res.data);
       } catch (err) {
         console.error("Failed to fetch players:", err);
@@ -71,7 +69,7 @@ const CreateMatch = () => {
 
     try {
       setLoading(true);
-      await axios.post("https://play-pulse-ivory.vercel.app/matches", {
+      await axios.post("http://localhost:3000/matches", {
         teamA: teamA.map((p) => p._id),
         teamB: teamB.map((p) => p._id),
         teamAName: teamAName.trim(),

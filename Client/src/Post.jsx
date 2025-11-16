@@ -9,7 +9,7 @@ const Post = () => {
 
   // Fetch all posts from backend
   useEffect(() => {
-    fetch("https://play-pulse-ivory.vercel.app/post")
+    fetch("http://localhost:3000/post")
       .then((res) => res.json())
       .then((data) => setPosts(data))
       .catch((err) => console.error("Error fetching posts:", err));
@@ -37,7 +37,7 @@ const Post = () => {
     );
 
     try {
-      await fetch(`https://play-pulse-ivory.vercel.app/post/${postId}/like`, {
+      await fetch(`http://localhost:3000/post/${postId}/like`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: currentUser }),
@@ -55,14 +55,11 @@ const Post = () => {
     const comment = { text, user: user?.displayName || "Anonymous" };
 
     try {
-      await fetch(
-        `https://play-pulse-ivory.vercel.app/post/${postId}/comment`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(comment),
-        }
-      );
+      await fetch(`http://localhost:3000/post/${postId}/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(comment),
+      });
 
       setPosts((prev) =>
         prev.map((post) =>

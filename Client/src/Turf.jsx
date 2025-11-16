@@ -10,7 +10,7 @@ const TurfList = () => {
 
   // Fetch turfs
   useEffect(() => {
-    fetch("https://play-pulse-ivory.vercel.app/turfs")
+    fetch("http://localhost:3000/turfs")
       .then((res) => res.json())
       .then(setTurfs)
       .catch(console.error);
@@ -19,18 +19,15 @@ const TurfList = () => {
   // Booking handler
   const handleBooking = async (turfId, slot, date) => {
     try {
-      const res = await fetch(
-        `https://play-pulse-ivory.vercel.app/turfs/${turfId}/book`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            slot,
-            user: user?.email || "guest@example.com",
-            date,
-          }),
-        }
-      );
+      const res = await fetch(`http://localhost:3000/turfs/${turfId}/book`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slot,
+          user: user?.email || "guest@example.com",
+          date,
+        }),
+      });
 
       if (!res.ok) {
         const err = await res.json();

@@ -87,14 +87,11 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
         };
 
         // Save booking in MongoDB (bookings collection)
-        const res = await fetch(
-          "https://play-pulse-ivory.vercel.app/bookings",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(bookingData),
-          }
-        );
+        const res = await fetch("http://localhost:3000/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingData),
+        });
 
         const data = await res.json();
 

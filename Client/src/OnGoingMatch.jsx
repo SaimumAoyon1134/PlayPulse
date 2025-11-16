@@ -3,7 +3,7 @@ import { AuthContext } from "./AuthContext";
 import { useNavigate } from "react-router-dom"; 
 
 const OngoingMatches = () => {
-  const { ongoing, setLive, setOngoing } = useContext(AuthContext);
+  const { upcoming, setLive, setUpcoming } = useContext(AuthContext);
   const [loadingMatchId, setLoadingMatchId] = useState(null);
   const navigate = useNavigate(); 
   const handleStartMatch = async (matchId) => {
@@ -21,22 +21,21 @@ const OngoingMatches = () => {
     const data = await res.json();
 
     if (data.success) {
-      // Safely find match
-      const match = ongoing.find((m) => m._id === matchId);
+    
+      const match = upcoming.find((m) => m._id === matchId);
 
       if (!match) {
         console.error("Match not found in ongoing:", matchId);
         return;
       }
 
-      // Remove from waiting
-      setOngoing((prev) => prev.filter((m) => m._id !== matchId));
+    
+      setUpcoming((prev) => prev.filter((m) => m._id !== matchId));
 
-      // Add to live
+   
       setLive((prev) => [...prev, match]);
 
-      // Do NOT navigate
-      // MatchManagement now opens from MyLive context, not route
+      
     }
   } catch (err) {
     console.error("Failed to start match:", err);
@@ -49,11 +48,11 @@ const OngoingMatches = () => {
     <div className="p-5 max-w-3xl mx-auto">
       <h2 className="text-2xl font-semibold mb-4">Waiting Matches</h2>
 
-      {ongoing.length === 0 ? (
+      {upcoming.length === 0 ? (
         <p className="text-gray-500">No waiting matches to start.</p>
       ) : (
         <div className="space-y-4">
-          {ongoing.map((m) => (
+          {upcoming.map((m) => (
             <div
               key={m._id}
               className="border p-4 rounded-lg shadow-sm bg-white flex justify-between items-center"

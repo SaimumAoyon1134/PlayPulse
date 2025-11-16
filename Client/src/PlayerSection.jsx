@@ -15,9 +15,7 @@ const PlayerSection = () => {
   const fetchPlayers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        "https://play-pulse-ivory.vercel.app/players"
-      );
+      const res = await axios.get("http://localhost:3000/players");
       setPlayers(res.data);
     } catch (err) {
       console.error("Error fetching players:", err);

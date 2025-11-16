@@ -1,6 +1,6 @@
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-
+import { io } from "socket.io-client";
 import { AuthContext } from "./AuthContext";
 import {
   createUserWithEmailAndPassword,
@@ -17,177 +17,160 @@ const provider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [announcements, setAnnouncements] = useState([]);
-  const [posts, setPosts] = useState([]);
+
   const [upcoming, setUpcoming] = useState([]);
   const [live, setLive] = useState([]);
   const [recent, setRecent] = useState([]);
-  const [ongoing, setOngoing] = useState([]);
   const [players, setPlayers] = useState([]);
 
-useEffect(() => {
-  const fetchPlayers = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/players");
-      const data = await res.json();
-      setPlayers(data); 
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  fetchPlayers();
-}, []);
+  const socketRef = useRef(null);
 
-const fetchMatches = async () => {
-  try {
-    const res = await fetch("https://play-pulse-ivory.vercel.app/matches");
-    const data = await res.json();
-    console.log(data)
-    const now = new Date();
-
-    const upcomingMatches = [];
-    const liveMatches = [];
-    const recentMatches = [];
-    const ongoingToStart = []; 
-
-    
-
-    data.forEach((m) => {
-  const start = new Date(`${m.matchDate}T${m.matchTime}`);
-  const end = new Date(start.getTime() + m.matchDuration * 60000);
-  const now = new Date();
-
-  if (m.isLive) {
-    liveMatches.push(m);
-  } else if (m.isFinished) {
-    recentMatches.push(m);
-  } else if (now < start) {
-    upcomingMatches.push(m);
-  } else {
-    ongoingToStart.push(m);
-  }
-});
-
-    setUpcoming(upcomingMatches);
-    setLive(liveMatches);
-    setRecent(recentMatches);
-    setOngoing(ongoingToStart); 
-  } catch (err) {
-    console.error(err);
-    setInterval(fetchMatches, 1000);
-  }
-};
-useEffect(() => {
-  const int = setInterval(() => {
-    fetchMatches();
-  }, 1000); 
-
-  return () => clearInterval(int);
-}, []);
+  // --------------------------
+  // SOCKET.IO SETUP
+  // --------------------------
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch("https://play-pulse-ivory.vercel.app/post");
-        const data = await res.json();
-        setPosts(data);
-      } catch (err) {
-        console.error("Error fetching posts:", err);
-      }
+    // Connect socket
+    socketRef.current = io("http://localhost:3000", { transports: ["websocket"] });
+    const socket = socketRef.current;
+
+    // Match started
+    socket.on("match-start", (match) => {
+      setLive((prev) => [...prev, match]);
+      setUpcoming((prev) => prev.filter((m) => m._id !== match._id));
+    });
+
+    // Match updated (stats etc.)
+    socket.on("match-update", (match) => {
+      setLive((prev) => prev.map((m) => (m._id === match._id ? { ...m, ...match } : m)));
+    });
+
+    // Match ended
+    socket.on("match-end", (match) => {
+      setLive((prev) => prev.filter((m) => m._id !== match._id));
+      setRecent((prev) => [...prev, match]);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      if (socket) socket.disconnect();
     };
-    fetchPosts();
   }, []);
 
-  const signUp = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  // --------------------------
+  // FETCH PLAYERS
+  // --------------------------
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/players");
+        const data = await res.json();
+        setPlayers(data);
+      } catch (err) {
+        console.error("Failed to fetch players:", err);
+      }
+    };
+    fetchPlayers();
+  }, []);
+
+  // --------------------------
+  // FETCH MATCHES
+  // --------------------------
+  const fetchMatches = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/matches");
+      const data = await res.json();
+
+      const upcomingArr = [];
+      const liveArr = [];
+      const recentArr = [];
+
+      data.forEach((m) => {
+        if (m.isLive) liveArr.push(m);
+        else if (m.isFinished) recentArr.push(m);
+        else upcomingArr.push(m);
+      });
+
+      setUpcoming(upcomingArr);
+      setLive(liveArr);
+      setRecent(recentArr);
+    } catch (err) {
+      console.error("Failed to fetch matches:", err);
+    }
   };
-  const signIn = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
+
+  useEffect(() => {
+    fetchMatches();
+    const interval = setInterval(fetchMatches, 10000); // refresh every 10s
+    return () => clearInterval(interval);
+  }, []);
+
+  // --------------------------
+  // AUTH FUNCTIONS
+  // --------------------------
+  const signUp = (email, password) => createUserWithEmailAndPassword(auth, email, password);
+
+  const signIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
+
   const googleSignIn = async () => {
     setIsLoading(true);
-
     try {
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error("Google sign-in failed:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logOut = () => {
-    signOut(auth)
-      .then(() => {
-        console.log("Sign-out successful.");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const logOut = () => signOut(auth);
+
+  const reset = (email) => sendPasswordResetEmail(auth, email);
+
+  const update = async (name, image) => {
+    if (!auth.currentUser) return;
+    setIsLoading(true);
+    try {
+      await updateProfile(auth.currentUser, { displayName: name, photoURL: image });
+      setUser({ ...auth.currentUser });
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const reset = (email) => {
-    sendPasswordResetEmail(auth, email)
-      .then(() => {})
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+
+  // --------------------------
+  // AUTH STATE LISTENER
+  // --------------------------
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setIsLoading(false);
     });
-    return () => {
-      unSubscribe();
-    };
+    return () => unsub();
   }, []);
-  useEffect(() => {
-    console.log("User changed:", user);
-  }, [user]);
 
-  const update = async (name, image) => {
-    if (auth.currentUser) {
-      setIsLoading(true);
-      try {
-        await updateProfile(auth.currentUser, {
-          displayName: name,
-          photoURL: image,
-        });
-
-        setUser({ ...auth.currentUser });
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
+  // --------------------------
+  // PROVIDER VALUE
+  // --------------------------
   const authInfo = {
+    user,
+    isLoading,
     signUp,
     signIn,
-    user,
+    googleSignIn,
     logOut,
     reset,
-    isLoading,
     update,
-    googleSignIn,
-    announcements,
-    setAnnouncements,
-    posts,
-    setPosts,
     upcoming,
     live,
     recent,
-    ongoing, 
-    setLive,
-    setOngoing,     
-    fetchMatches, 
+    fetchMatches,
     players,
-    setRecent,
   };
-  return (
-    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
-  );
+
+  return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

@@ -4,27 +4,37 @@ import { AuthContext } from "./AuthContext";
 const Upcoming = () => {
   const { upcoming } = useContext(AuthContext);
 
-  if (!upcoming) return <div className="text-center py-10 text-lg">Loading...</div>;
+  if (!upcoming )
+    return <div className="text-center py-10 text-lg">Loading...</div>;
 
-  // Sort upcoming matches by date & time
+ 
   const sortedUpcoming = [...upcoming].sort((a, b) => {
     const dateA = new Date(`${a.matchDate}T${a.matchTime}`);
     const dateB = new Date(`${b.matchDate}T${b.matchTime}`);
     return dateA - dateB;
   });
 
+ 
+
   return (
-    <div className="max-w-6xl mx-auto px-6 py-2">
-      {sortedUpcoming.length === 0 ? (
-        <p className="text-center text-gray-500 text-lg">No upcoming matches.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-8">
-          {sortedUpcoming.map((match) => (
-            <div
-              key={match._id}
-              className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between"
-            >
-              <div>
+    <div className="max-w-6xl mx-auto px-6 py-6 space-y-10">
+
+      
+
+ 
+      <div>
+        <h2 className="text-2xl font-semibold mb-4 text-blue-700"> Upcoming Matches</h2>
+
+        {sortedUpcoming.length === 0 ? (
+          <p className="text-center text-gray-500 text-lg">No upcoming matches.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-8">
+            {sortedUpcoming.map((match) => (
+              <div
+                key={match._id}
+                className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 
+                rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6"
+              >
                 <h3 className="text-center text-xl font-semibold text-gray-900 mb-3">
                   <span className="text-blue-600">{match.teamAName}</span>{" "}
                   <span className="text-gray-500">vs</span>{" "}
@@ -40,26 +50,13 @@ const Upcoming = () => {
                     <span className="font-medium text-gray-900">⏰ Time:</span>{" "}
                     {match.matchTime}
                   </p>
-                  {/* <p>
-                    <span className="font-medium text-gray-900">⏱ Duration:</span>{" "}
-                    {match.matchDuration} mins
-                  </p>
-                  <p>
-                    <span className="font-medium text-gray-900">👥 Team Size:</span>{" "}
-                    {match.teamSize}
-                  </p> */}
                 </div>
               </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-              {/* <div className="mt-5 text-center">
-                <button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-4 py-2 rounded-lg shadow hover:scale-105 transition-transform duration-200">
-                  View Details
-                </button>
-              </div> */}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-require("dotenv").config({ path: "./local.env" });
+require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -7,16 +7,16 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 
-// load PORT from env if available
 const port = process.env.PORT || 3000;
+const http = require("http");
+const { Server } = require("socket.io");
 
 app.use(cors());
 app.use(express.json());
+console.log("🚀 Starting PlayPulse Server...");
 
-// ✅ Now this will not be undefined
 const uri = process.env.MONGO_URI;
 
-// ------------------ MongoDB Connection ------------------
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -24,9 +24,40 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+const server = http.createServer(app);
+
+// SOCKET
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PATCH"]
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+// Make socket accessible
+app.set("io", io);
+
+// Start server
+server.listen(3000, () =>
+  console.log("Server running with Socket.io on port 3000")
+);
+
 async function run() {
   try {
-    // await client.connect();
+    await client.connect();
+
+    await client.db("admin").command({ ping: 1 });
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
     const db = client.db("PlayPulseDB");
     const myColl = db.collection("Announcement");
     const myPostColl = db.collection("Post");
@@ -35,7 +66,7 @@ async function run() {
     const bookingsCollection = db.collection("bookings");
     const matchesCollection = db.collection("matches");
 
-    // ---------------------- ANNOUNCEMENTS ----------------------
+    // ---------------------- ANNOUNCEMENTS ----------------------//
 
     app.post("/announcement", async (req, res) => {
       try {
@@ -71,9 +102,8 @@ async function run() {
       }
     });
 
-    // ---------------------- POSTS ----------------------
+    // ---------------------- POSTS ----------------------//
 
-    // Create new post
     app.post("/post", async (req, res) => {
       const data = req.body;
       data.likes = 0;
@@ -532,142 +562,133 @@ async function run() {
       }
     });
 
-    app.patch("/matches/start/:id", async (req, res) => {
-      try {
-        const id = req.params.id;
-        const now = new Date();
 
-        const result = await matchesCollection.updateOne(
-          { _id: new ObjectId(id) },
+app.patch("/matches/start/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const now = new Date();
+    const io = req.app.get("io");
+
+    const result = await matchesCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          isLive: true,
+          isFinished: false,
+          matchDateTime: now,
+        },
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ success: false, message: "Match not found" });
+    }
+
+    const updatedMatch = await matchesCollection.findOne({ _id: new ObjectId(id) });
+    io.emit("match-start", updatedMatch);
+
+    res.json({ success: true, message: "Match started" });
+  } catch (err) {
+    console.error("Start match error:", err);
+    res.status(500).json({ success: false, message: "Failed to start match" });
+  }
+});
+
+
+
+app.patch("/matches/:id/end", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const io = req.app.get("io");
+
+    await matchesCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          isLive: false,
+          isFinished: true,
+        },
+      }
+    );
+
+    const endedMatch = await matchesCollection.findOne({ _id: new ObjectId(id) });
+    io.emit("match-end", endedMatch);
+
+    res.json({ success: true, message: "Match ended" });
+
+  } catch (err) {
+    console.error("End match error:", err);
+    res.status(500).json({ success: false, message: "Failed to end match" });
+  }
+});
+
+
+
+app.patch("/matches/:id/stats", async (req, res) => {
+  try {
+    const matchId = req.params.id;
+    const { stats, playerStats } = req.body;
+    const io = req.app.get("io");
+
+    if (!stats) {
+      return res.status(400).json({
+        success: false,
+        message: "Match stats missing",
+      });
+    }
+
+    // Update MATCH stats
+    await matchesCollection.updateOne(
+      { _id: new ObjectId(matchId) },
+      {
+        $set: {
+          stats,
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    // Update PLAYER stats
+    if (playerStats && typeof playerStats === "object") {
+      for (const playerId in playerStats) {
+        const ps = playerStats[playerId];
+
+        await playersCollection.updateOne(
+          { _id: new ObjectId(playerId) },
           {
-            $set: {
-              isLive: true,
-              matchDateTime: now,
+            $inc: {
+              "stats.goals": ps.goals || 0,
+              "stats.assists": ps.assists || 0,
+              "stats.fouls": ps.fouls || 0,
             },
           }
         );
-
-        if (result.modifiedCount === 0) {
-          return res.status(404).json({ message: "Match not found" });
-        }
-
-        res.json({ message: "Match started", success: true });
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Failed to start match" });
       }
-    });
-    app.patch("/matches/:id/end", async (req, res) => {
-      try {
-        const id = req.params.id;
+    }
 
-        const result = await matchesCollection.updateOne(
-          { _id: new ObjectId(id) },
-          { $set: { isLive: false, isFinished: true } }
-        );
-
-        res.json({ message: "Match ended", success: true });
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Failed to end match" });
-      }
+    const updatedMatch = await matchesCollection.findOne({
+      _id: new ObjectId(matchId),
     });
 
+    io.emit("match-update", updatedMatch);
 
-    app.patch("/matches/:id/stats", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { stats } = req.body;
+    return res.json({
+      success: true,
+      message: "Stats updated successfully",
+      match: updatedMatch,
+    });
 
-    if (!stats) {
-      return res.status(400).json({ message: "Stats object missing" });
-    }
-
-    const match = await matchesCollection.findOne({ _id: new ObjectId(id) });
-    if (!match) return res.status(404).json({ message: "Match not found" });
-
-    // Save match stats to match record
-    await matchesCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { stats } }
-    );
-
-    // -= PLAYER UPDATES =-
-
-    const updatePlayer = async (playerId, updates) => {
-      await playersCollection.updateOne(
-        { _id: new ObjectId(playerId) },
-        { $inc: updates }
-      );
-    };
-
-    // Update goals / fouls for each team
-    for (let p of match.teamA) {
-      await updatePlayer(p._id, {
-        goals: stats.teamAGoals,
-        fouls: stats.teamAFouls,
-        matchesPlayed: 1,
-      });
-    }
-
-    for (let p of match.teamB) {
-      await updatePlayer(p._id, {
-        goals: stats.teamBGoals,
-        fouls: stats.teamBFouls,
-        matchesPlayed: 1,
-      });
-    }
-
-    // Wins / losses
-    let winner = null;
-    if (stats.teamAScore > stats.teamBScore) winner = "A";
-    else if (stats.teamBScore > stats.teamAScore) winner = "B";
-
-    if (winner) {
-      if (winner === "A") {
-        for (let p of match.teamA) await updatePlayer(p._id, { wins: 1 });
-        for (let p of match.teamB) await updatePlayer(p._id, { losses: 1 });
-      } else {
-        for (let p of match.teamB) await updatePlayer(p._id, { wins: 1 });
-        for (let p of match.teamA) await updatePlayer(p._id, { losses: 1 });
-      }
-    }
-
-    // Recalculate rank for all players (win %)
-    const allPlayers = await playersCollection.find().toArray();
-    for (let p of allPlayers) {
-      const total = p.wins + p.losses;
-      const rank = total > 0 ? (p.wins / total) * 100 : 0;
-      await playersCollection.updateOne(
-        { _id: p._id },
-        { $set: { rank } }
-      );
-    }
-
-    res.json({ success: true, message: "Match & player stats updated" });
   } catch (err) {
-    console.error("Stats update error:", err);
-    res.status(500).json({ message: "Failed to update stats" });
+    console.error("PATCH /matches/:id/stats ERROR:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
-    // Ping test
-    // await client.db("admin").command({ ping: 1 });
-    // console.log("✅ MongoDB connected!");
   } finally {
   }
 }
 
 run().catch(console.dir);
 
-// Start server
-// mongoose
-//   .connect(uri)
-//   .then(() => {
-
-//   })
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
-// module.exports = app;
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });

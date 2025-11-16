@@ -31,10 +31,7 @@ const AddPlayerModal = ({ isOpen, onClose, onPlayerAdded }) => {
     };
 
     try {
-      const res = await axios.post(
-        "https://play-pulse-ivory.vercel.app/players",
-        newPlayer
-      );
+      const res = await axios.post("http://localhost:3000/players", newPlayer);
       if (res.status === 201 || res.status === 200) {
         onPlayerAdded(res.data); // add new player to list
         setName("");

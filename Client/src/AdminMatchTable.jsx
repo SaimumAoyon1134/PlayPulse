@@ -4,12 +4,12 @@ import axios from "axios";
 const AdminMatchTable = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("All"); 
+  const [filter, setFilter] = useState("All");
 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const res = await axios.get("https://play-pulse-ivory.vercel.app/matches");
+        const res = await axios.get("http://localhost:3000/matches");
         const now = new Date();
 
         const matchesWithStatus = res.data.map((m) => {
@@ -46,7 +46,7 @@ const AdminMatchTable = () => {
 
   return (
     <div className="max-w-7xl mx-auto  py-2 h-full bg-gradient-to-br from-red-100 via-yellow-50 to-green-100">
-    <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
+      <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
         All Matches
       </h2>
 
@@ -93,10 +93,7 @@ const AdminMatchTable = () => {
           <tbody>
             {filteredMatches.length === 0 ? (
               <tr>
-                <td
-                  colSpan={6}
-                  className="px-4 py-5 text-center text-gray-500"
-                >
+                <td colSpan={6} className="px-4 py-5 text-center text-gray-500">
                   No matches found.
                 </td>
               </tr>
@@ -107,8 +104,8 @@ const AdminMatchTable = () => {
                   className="border-t border-gray-200 hover:bg-gray-50 transition"
                 >
                   <td className="px-4 py-3">
-                    <span className="text-blue-600">{match.teamAName}</span>{" "}
-                    vs <span className="text-red-600">{match.teamBName}</span>
+                    <span className="text-blue-600">{match.teamAName}</span> vs{" "}
+                    <span className="text-red-600">{match.teamBName}</span>
                   </td>
                   <td className="px-4 py-3">
                     {new Date(match.matchDateTime).toLocaleDateString()}

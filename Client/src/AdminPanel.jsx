@@ -9,9 +9,7 @@ const AdminPanel = () => {
 
   const fetchBookings = async () => {
     try {
-      const res = await fetch(
-        "https://play-pulse-ivory.vercel.app/admin/bookings"
-      );
+      const res = await fetch("http://localhost:3000/admin/bookings");
       const data = await res.json();
       console.log(data);
       setBookings(data);
@@ -29,7 +27,7 @@ const AdminPanel = () => {
 
     try {
       const res = await fetch(
-        `https://play-pulse-ivory.vercel.app/admin/bookings/${id}/cancel`,
+        `http://localhost:3000/admin/bookings/${id}/cancel`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -66,9 +64,8 @@ const AdminPanel = () => {
 
   return (
     <div className="py-2 bg-gray-50 min-h-screen">
- 
-     <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
-         Booking History
+      <h2 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
+        Booking History
       </h2>
       <div className="px-6 overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="table w-full text-sm">

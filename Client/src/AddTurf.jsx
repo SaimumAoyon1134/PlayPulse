@@ -38,7 +38,7 @@ const AddTurf = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("https://play-pulse-ivory.vercel.app/turfs", {
+      const res = await fetch("http://localhost:3000/turfs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(turf),

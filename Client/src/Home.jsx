@@ -34,7 +34,7 @@ const Home = () => {
     };
 
     try {
-      const res = await fetch("https://play-pulse-ivory.vercel.app/post", {
+      const res = await fetch("http://localhost:3000/post", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),
