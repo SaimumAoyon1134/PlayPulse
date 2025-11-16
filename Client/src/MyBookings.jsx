@@ -5,12 +5,24 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import Loading from "./Loading";
+import Swal from "sweetalert2";
 
 const MyBookings = () => {
   const { user } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
   useEffect(() => {
     if (!user?.email) return;
     fetch(`http://localhost:3000/user/bookings/${user.email}`)
@@ -52,7 +64,10 @@ const MyBookings = () => {
               )
           )
         );
-        alert("Booking cancelled successfully");
+        Toast.fire({
+          icon: "success",
+          title: "Booking cancelled successfully",
+        });
       } else {
         alert(data.message);
       }
@@ -62,19 +77,17 @@ const MyBookings = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-2 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 h-full">
-      <h1 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
+    <div className="max-w-6xl mx-auto py-2 bg-gray-50  h-full">
+      {/* <h1 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
         My Bookings
-      </h1>
+      </h1> */}
 
       {loading ? (
-        <p className="text-center text-gray-500 text-lg">
-          Loading your bookings...
-        </p>
+        <Loading />
       ) : bookings.length === 0 ? (
-        <div className="text-center py-16  bg-gray-50 rounded-2xl shadow-inner bg-gradient-to-br from-red-100 via-yellow-50 to-green-100">
-          <EventBusyIcon sx={{ fontSize: 60 }} className="text-gray-400 mb-3" />
-          <p className="text-gray-500 text-lg">You have no active bookings.</p>
+        <div className="text-center py-16  bg-gray-50 rounded-2xl shadow-inner ">
+          <EventBusyIcon sx={{ fontSize: 60 }} className="text-red-400 mb-3" />
+          <p className="text-red-400 text-lg">You have no active bookings.</p>
         </div>
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 px-4 ">

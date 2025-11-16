@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "./AuthContext";
-
+import Swal from "sweetalert2";
 const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
   const { user } = useContext(AuthContext);
 
@@ -10,7 +10,17 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
     new Date().toISOString().split("T")[0]
   );
   const [loadingSlot, setLoadingSlot] = useState(null);
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
   // Function to filter out past bookings
   const filterFutureBookings = (allBookings) => {
     const now = new Date();
@@ -61,7 +71,10 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
   // };
   const handleSlotBooking = async (slot) => {
     if (!user?.email) {
-      alert("You must be logged in to book a slot!");
+      Toast.fire({
+  icon: "error",
+  title: "You Must Login To Book."
+});
       return;
     }
 
@@ -96,19 +109,27 @@ const TurfDetails = ({ selectedTurf, handleBooking, setSelectedTurf }) => {
         const data = await res.json();
 
         if (data.success) {
-          alert("✅ Booking confirmed!");
-          // Update local state so UI updates instantly
+          Toast.fire({
+            icon: "success",
+            title: "Booked successfully",
+          });
           setBookings((prev) => [
             ...prev,
             { ...slot, date: selectedDate, user: user.email },
           ]);
         } else {
-          alert("❌ Failed to save booking in database!");
+          Toast.fire({
+            icon: "error",
+            title: "Failed to save booking in database! Please try again.",
+          });
         }
       }
     } catch (err) {
       console.error(err);
-      alert("⚠️ Something went wrong while booking!");
+      Toast.fire({
+        icon: "error",
+        title: "Something went wrong! Please try again for Booking.",
+      });
     }
 
     setLoadingSlot(null);

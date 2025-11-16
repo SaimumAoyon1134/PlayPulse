@@ -75,7 +75,7 @@ const AuthProvider = ({ children }) => {
 
   const fetchMatches = async () => {
     try {
-      setIsLoading(true);
+      // setIsLoading(true);
       const res = await fetch("http://localhost:3000/matches");
       const data = await res.json();
 
@@ -96,7 +96,7 @@ const AuthProvider = ({ children }) => {
       console.error("Failed to fetch matches:", err);
     }
      finally {
-    setIsLoading(false); 
+    // setIsLoading(false); 
   }
   };
 

@@ -2,18 +2,24 @@ import React, { useContext, useEffect, useState } from "react";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
 import TurfDetails from "./TurfDetails";
 import { AuthContext } from "./AuthContext";
+import Loading from "./Loading";
 
 const TurfList = () => {
   const [turfs, setTurfs] = useState([]);
   const [selectedTurf, setSelectedTurf] = useState(null);
-  const { user } = useContext(AuthContext);
+  const { user, } = useContext(AuthContext);
+
+   const [loadingTurfs, setLoadingTurfs] = useState(true);
 
   // Fetch turfs
   useEffect(() => {
+    setLoadingTurfs(true)
     fetch("http://localhost:3000/turfs")
       .then((res) => res.json())
       .then(setTurfs)
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoadingTurfs(false));
+      
   }, []);
 
   // Booking handler
@@ -45,19 +51,23 @@ const TurfList = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto h-full py-10 px-4 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100">
-      <h1 className="text-3xl w-full bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
+    <div className="max-w-7xl mx-auto h-full py-10 px-4 bg-gray-50">
+      {/* <h1 className="text-3xl w-full hover: bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white mb-5 font-semibold py-2  text-center">
         Football Turfs
-      </h1>
+      </h1> */}
 
-      {turfs.length === 0 ? (
+      {loadingTurfs ? (
+        <div className="flex justify-center items-center h-64">
+          <Loading />
+        </div>
+      ) :turfs.length === 0 ? (
         <p className="text-gray-500 text-center">No turfs available</p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {turfs.map((turf) => (
             <div
               key={turf._id}
-              className="bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col"
+              className="hover:bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 flex flex-col"
             >
               <img
                 src={turf.image}

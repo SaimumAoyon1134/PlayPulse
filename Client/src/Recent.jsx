@@ -26,7 +26,7 @@ const Recent = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-2">
+    <div className="max-w-6xl mx-auto px-6 py-2 bg-gray-50">
       {recent.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center p-8 rounded-xl bg-red-400  shadow-md border border-gray-200 space-y-3">
   <svg
@@ -104,8 +104,8 @@ const Recent = () => {
 
     
    {selectedMatch && (
-  <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-gradient-to-r from-[rgb(108,117,221)] via-[rgb(96,65,240)] to-[rgb(88,88,193)] text-white rounded-xl max-w-3xl w-full p-6 relative overflow-y-auto max-h-[80vh]">
+  <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50 ">
+    <div className="bg-gradient-to-r from-[rgb(108,117,221)] via-[rgb(96,65,240)] to-[rgb(88,88,193)] text-white rounded-xl max-w-3xl w-full p-6 relative overflow-y-auto max-h-[80vh] ">
       <button
         onClick={() => setSelectedMatch(null)}
         className="absolute top-3 right-3 text-white hover:text-red-500 font-bold"
@@ -132,7 +132,7 @@ const Recent = () => {
           </div>
         </div>
 
-        <div className="border p-4 rounded-lg">
+        <div className="border p-4 rounded-md  shadow-lg shadow-white">
           <h4 className="font-semibold mb-3 text-center">{selectedMatch.teamBName}</h4>
           <div className="text-sm space-y-1">
             <p>Goals Scored: {selectedMatch.stats?.teamBGoals ?? 0}</p>

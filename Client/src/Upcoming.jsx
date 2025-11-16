@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
 import { AuthContext } from "./AuthContext";
+import Loading from "./Loading";
 
 const Upcoming = () => {
-  const { upcoming } = useContext(AuthContext);
-
+  const { upcoming, isLoading } = useContext(AuthContext);
+// if(isLoading)return <Loading/>
   if (!upcoming )
-    return <div className="text-center py-10 text-lg">Loading...</div>;
+    return <Loading/>;
 
  
   const sortedUpcoming = [...upcoming].sort((a, b) => {
@@ -17,16 +18,37 @@ const Upcoming = () => {
  
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-6 space-y-10">
+    <div className="max-w-6xl  mx-auto px-6 py-6 space-y-10">
 
       
 
  
       <div>
-        <h2 className="text-2xl font-semibold mb-4 text-blue-700"> Upcoming Matches</h2>
+
 
         {sortedUpcoming.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg">No upcoming matches.</p>
+             <div className="flex flex-col items-center justify-center text-center p-8 rounded-xl bg-red-400  shadow-md border border-gray-200 space-y-3">
+  <svg
+    className="w-12 h-12 text-white"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 17v-2a4 4 0 018 0v2m-4-4v4m0-4H7m10 0h-2"
+    />
+  </svg>
+  <span className="text-white text-lg font-medium">
+    No Upcoming matches right now
+  </span>
+  <span className="text-white text-sm">
+    Opss!! Check back later for upcoming matches!
+  </span>
+</div>
         ) : (
           <div className="grid grid-cols-1 gap-8">
             {sortedUpcoming.map((match) => (

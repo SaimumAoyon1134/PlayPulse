@@ -98,7 +98,7 @@ const Post = () => {
   };
 
   return (
-    <div className="space-y-6  mx-auto ">
+    <div className="space-y-6 pt-2 mx-auto bg-gray-50 ">
       {loadingPosts ? (
         <div className="flex justify-center items-center h-64">
           <Loading />
@@ -109,7 +109,7 @@ const Post = () => {
         posts.map((post) => (
           <div
             key={post._id}
-            className="border-b border-gray-300 rounded-2xl p-3 m-3 md:m-10 shadow-md bg-gray-100 hover:scale-[1.01] overflow-hidden"
+            className="border-b border-gray-300 rounded-2xl p-3 m-3 md:m-10 shadow-md bg-white hover:scale-[1.01] overflow-hidden"
           >
             <div className="flex items-center gap-3 px-4 py-1 ">
               <img

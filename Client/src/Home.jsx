@@ -82,7 +82,7 @@ const Home = () => {
               className="input input-bordered w-full"
             />
             <div className="modal-action">
-              <button type="submit" className="btn bg-indigo-600 text-white">
+              <button type="submit" className="btn bg-gradient-to-tr from-[#6A11CB] to-[#2575FC] text-white">
                 Post
               </button>
               <button
