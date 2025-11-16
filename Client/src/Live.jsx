@@ -1,18 +1,38 @@
 import React, { useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import image from "./image copy.png";
+import Loading from "./Loading";
 
 const Live = () => {
   const { live } = useContext(AuthContext);
 
-  if (!live) return <div className="text-center py-10 text-lg">Loading...</div>;
+  if (!live) return <Loading/>;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-4">
       {live.length === 0 ? (
-        <p className="text-center text-gray-500 text-lg">
-          No live matches right now.
-        </p>
+      <div className="flex flex-col items-center justify-center text-center p-8 rounded-xl bg-red-400  shadow-md border border-gray-200 space-y-3">
+  <svg
+    className="w-12 h-12 text-white"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 17v-2a4 4 0 018 0v2m-4-4v4m0-4H7m10 0h-2"
+    />
+  </svg>
+  <span className="text-white text-lg font-medium">
+    No live matches right now
+  </span>
+  <span className="text-white text-sm">
+    Check back later for upcoming matches!
+  </span>
+</div>
       ) : (
         <div className="grid grid-cols-1 gap-8">
           {live.map((match) => (

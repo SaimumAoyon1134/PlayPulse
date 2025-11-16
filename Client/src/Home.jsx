@@ -30,7 +30,7 @@ const Home = () => {
       username: user.displayName || "Anonymous",
       userPhoto: user.photoURL || "",
       userId: user.uid,
-      createdAt: new Date().toISOString(), // Add timestamp
+      createdAt: new Date().toISOString(), 
     };
 
     try {
@@ -53,15 +53,12 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 ">
-      <h1 className=" w-full  text-white mb-5 font-semibold  text-center">
-        <AnnouncementMarquee />
-      </h1>
-
+    <div className="min-h-screen pt-1 ">
+   
       <div className="w-full flex justify-end mb-4 border-b">
         <button
           onClick={handlePost}
-          className="px-6 py-2 mb-2 rounded-full font-semibold bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white shadow-lg hover:scale-105 transition-transform duration-200 flex items-center gap-2"
+          className="px-6 py-2 mb-2 rounded-full font-semibold bg-gradient-to-tr from-[#6A11CB] to-[#2575FC] text-white shadow-lg hover:scale-105 transition-transform duration-200 flex items-center gap-2"
         >
           <AddCircleOutlineIcon /> Add Post
         </button>

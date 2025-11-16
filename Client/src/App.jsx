@@ -44,8 +44,8 @@ function App() {
           <Outlet />
         </div>
 
-        <div className="w-full md:w-[30%] bg-white shadow-md  pb-6 sticky top-20 h-[85vh] overflow-y-auto">
-          {/* Tab Buttons  bg-gradient-to-r from-red-600 via-red-400 to-red-600*/}
+        <div className="w-full md:w-[30%] bg-white shadow-md  pb-6 sticky top-20 h-[90vh] overflow-y-auto">
+         
           <div className="flex flex-row gap-3 mb-6 px-2  shadow-xl shadow-gray-200
                ">
             {["live", "recent", "upcoming"].map((tab) => (

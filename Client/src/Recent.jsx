@@ -1,13 +1,15 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
+import Loading from "./Loading";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const Recent = () => {
-  const { recent, players } = useContext(AuthContext);
+  const { recent, players,isLoading } = useContext(AuthContext);
   const [selectedMatch, setSelectedMatch] = useState(null);
 
-  if (!recent) return <div className="text-center py-10 text-lg">Loading...</div>;
+  if (!recent) return <Loading/>;
 
-  // Helper to get player object
+  
   const getPlayerObj = (id) => {
     return players.find((p) => String(p._id) === String(id)) || { _id: id, name: id, avatar: "" };
   };
@@ -26,7 +28,28 @@ const Recent = () => {
   return (
     <div className="max-w-6xl mx-auto px-6 py-2">
       {recent.length === 0 ? (
-        <p className="text-center text-gray-500 text-lg">No recent matches.</p>
+        <div className="flex flex-col items-center justify-center text-center p-8 rounded-xl bg-red-400  shadow-md border border-gray-200 space-y-3">
+  <svg
+    className="w-12 h-12 text-white"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 17v-2a4 4 0 018 0v2m-4-4v4m0-4H7m10 0h-2"
+    />
+  </svg>
+  <span className="text-white text-lg font-medium">
+    No Recent matches right now
+  </span>
+  <span className="text-white text-sm">
+    Check back later for Recent matches!
+  </span>
+</div>
       ) : (
         <div className="grid grid-cols-1 gap-8">
           {recent.map((match) => (
@@ -38,12 +61,10 @@ const Recent = () => {
                 <h3 className="text-center text-xl font-semibold text-gray-900 mb-2">
                   <span className="text-blue-600">{match.teamAName}</span>{" "}
                   <span className="text-gray-500">vs</span>{" "}
-                  <span className="text-red-600">{match.teamBName}</span>
+                  <span className="text-blue-600">{match.teamBName}</span>
                 </h3>
 
-                <p className="text-center text-sm font-medium mb-3 text-gray-700">
-                  Result: <span className="text-indigo-600">{getResult(match)}</span>
-                </p>
+              
 
                 <div className="space-y-2 text-sm text-gray-700">
                   <p>
@@ -63,6 +84,9 @@ const Recent = () => {
                     {match.teamSize}
                   </p>
                 </div>
+                  <p className="text-center text-sm font-medium text-gray-700">
+                  <span className="text-[#FF9D00]"><EmojiEventsIcon/></span> <span className="text-red-500 font-extrabold">{getResult(match)}</span>
+                </p>
               </div>
 
               <div className="mt-5 text-center flex justify-center gap-3">
@@ -81,10 +105,10 @@ const Recent = () => {
     
    {selectedMatch && (
   <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl max-w-3xl w-full p-6 relative overflow-y-auto max-h-[80vh]">
+    <div className="bg-gradient-to-r from-[rgb(108,117,221)] via-[rgb(96,65,240)] to-[rgb(88,88,193)] text-white rounded-xl max-w-3xl w-full p-6 relative overflow-y-auto max-h-[80vh]">
       <button
         onClick={() => setSelectedMatch(null)}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 font-bold"
+        className="absolute top-3 right-3 text-white hover:text-red-500 font-bold"
       >
         ✕
       </button>
@@ -94,12 +118,12 @@ const Recent = () => {
       </h2>
 
       <p className="text-center mb-4 font-medium">
-        Result: <span className="text-indigo-600">{getResult(selectedMatch)}</span>
+        Result: <span className="font-extrabold text-red-400">{getResult(selectedMatch)}</span>
       </p>
 
       <div className="grid md:grid-cols-2 gap-6">
   
-        <div className="border p-4 rounded-lg">
+        <div className="border p-4 rounded-lg shadow-md shadow-white">
           <h4 className="font-semibold mb-3 text-center">{selectedMatch.teamAName}</h4>
           <div className="text-sm space-y-1">
             <p>Goals Scored: {selectedMatch.stats?.teamAGoals ?? 0}</p>
@@ -118,14 +142,7 @@ const Recent = () => {
         </div>
       </div>
 
-      {/* Match info */}
-      <div className="mt-6 text-sm text-gray-700 space-y-1">
-        <p>Match Date: {selectedMatch.matchDate}</p>
-        <p>Match Time: {selectedMatch.matchTime}</p>
-        <p>Duration: {selectedMatch.matchDuration} mins</p>
-        <p>Team Size: {selectedMatch.teamSize}</p>
-        <p>Status: {selectedMatch.isLive ? "Live" : selectedMatch.isFinished ? "Finished" : "Upcoming"}</p>
-      </div>
+    
     </div>
   </div>
 )}

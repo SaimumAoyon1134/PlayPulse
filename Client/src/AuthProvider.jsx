@@ -72,11 +72,10 @@ const AuthProvider = ({ children }) => {
     fetchPlayers();
   }, []);
 
-  // --------------------------
-  // FETCH MATCHES
-  // --------------------------
+
   const fetchMatches = async () => {
     try {
+      setIsLoading(true);
       const res = await fetch("http://localhost:3000/matches");
       const data = await res.json();
 
@@ -96,17 +95,18 @@ const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error("Failed to fetch matches:", err);
     }
+     finally {
+    setIsLoading(false); 
+  }
   };
 
   useEffect(() => {
     fetchMatches();
-    const interval = setInterval(fetchMatches, 10000); // refresh every 10s
+    const interval = setInterval(fetchMatches, 1000); 
     return () => clearInterval(interval);
   }, []);
 
-  // --------------------------
-  // AUTH FUNCTIONS
-  // --------------------------
+
   const signUp = (email, password) => createUserWithEmailAndPassword(auth, email, password);
 
   const signIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
@@ -140,9 +140,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // --------------------------
-  // AUTH STATE LISTENER
-  // --------------------------
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -151,9 +149,7 @@ const AuthProvider = ({ children }) => {
     return () => unsub();
   }, []);
 
-  // --------------------------
-  // PROVIDER VALUE
-  // --------------------------
+  
   const authInfo = {
     user,
     isLoading,
