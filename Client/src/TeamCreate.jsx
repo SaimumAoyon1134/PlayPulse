@@ -1,6 +1,8 @@
 // src/components/CreateMatch.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
+import Loading from "./Loading";
 
 const CreateMatch = () => {
   const [players, setPlayers] = useState([]);
@@ -13,21 +15,39 @@ const CreateMatch = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loadingp, setLoadingp]=useState(true);
 
   // ✅ Added these three new states
   const [matchDate, setMatchDate] = useState("");
   const [matchTime, setMatchTime] = useState("");
   const [matchDuration, setMatchDuration] = useState(90);
 
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      },
+    });
   // Fetch all players
   useEffect(() => {
+
     const fetchPlayers = async () => {
+      setLoadingp(true);
       try {
         const res = await axios.get("http://localhost:3000/players");
         setPlayers(res.data);
+        setLoadingp(false);
       } catch (err) {
         console.error("Failed to fetch players:", err);
-        alert("Failed to load players");
+        Toast.fire({
+            icon: "error",
+            title: "Failed to reload in database! Please try again.",
+          });
       }
     };
     fetchPlayers();
@@ -43,11 +63,18 @@ const CreateMatch = () => {
   const addPlayerToTeam = (player, team) => {
     if (team === "A") {
       if (teamA.length >= teamSize)
-        return alert(`Team A can have only ${teamSize} players`);
+      
+        return Toast.fire({
+            icon: "error",
+            title: `Team A can have only ${teamSize} players`,
+          });
       setTeamA([...teamA, player]);
     } else {
       if (teamB.length >= teamSize)
-        return alert(`Team B can have only ${teamSize} players`);
+         return Toast.fire({
+            icon: "error",
+            title: `Team B can have only ${teamSize} players`,
+          });
       setTeamB([...teamB, player]);
     }
     setModalOpen(false);
@@ -61,11 +88,25 @@ const CreateMatch = () => {
 
   const handleCreateMatch = async () => {
     if (!teamAName.trim() || !teamBName.trim())
-      return alert("Please enter names for both teams");
+
+     return Toast.fire({
+            icon: "error",
+            title: `Please enter names for both teams`,
+          });
     if (teamA.length !== teamSize || teamB.length !== teamSize)
-      return alert(`Both teams must have exactly ${teamSize} players`);
+    
+      return Toast.fire({
+            icon: "error",
+            title: `Both teams must have exactly ${teamSize} players`,
+          });
+    
     if (!matchDate || !matchTime)
-      return alert("Please select match date and time");
+
+    return Toast.fire({
+            icon: "error",
+            title: `Please select match date and time`,
+          });
+    
 
     try {
       setLoading(true);
@@ -80,7 +121,11 @@ const CreateMatch = () => {
         matchDuration,
         createdAt: new Date(),
       });
-      alert("Match created successfully!");
+      Swal.fire({
+  title: "Match Create Successfully!!!!",
+  icon: "success",
+  draggable: true
+});
       setTeamA([]);
       setTeamB([]);
       setTeamAName("Team A");
@@ -134,14 +179,14 @@ const CreateMatch = () => {
   );
 
   return (
-    <div className="max-w-6xl text-black  mx-auto p-4 sm:p-6 bg-gradient-to-br from-red-100 via-yellow-50 to-green-100 min-h-screen">
-      <h2 className="text-3xl font-bold text-center mb-6 text-green-700">
+    <div className="max-w-6xl text-black  mx-auto p-4 sm:p-6  min-h-screen">
+      {/* <h2 className="text-3xl font-bold text-center mb-6 text-green-700">
         Create Match
-      </h2>
+      </h2> */}
 
-      {/* Controls */}
+    
       <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
-        {/* Team Size */}
+    
         <div className="flex items-center gap-2 sm:gap-4">
           <label className="font-semibold">Team Size:</label>
           <input
@@ -150,24 +195,24 @@ const CreateMatch = () => {
             max={11}
             value={teamSize}
             onChange={(e) => setTeamSize(parseInt(e.target.value))}
-            className="border rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="shadow-md shadow-gray-400 rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-green-400"
           />
         </div>
 
-        {/* Team Names */}
+     
         <input
           type="text"
           placeholder="Team A Name"
           value={teamAName}
           onChange={(e) => setTeamAName(e.target.value)}
-          className="border rounded px-2 py-1 w-full sm:w-1/5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="shadow-md shadow-gray-400 rounded px-2 py-1 w-full sm:w-1/5 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
         <input
           type="text"
           placeholder="Team B Name"
           value={teamBName}
           onChange={(e) => setTeamBName(e.target.value)}
-          className="border rounded px-2 py-1 w-full sm:w-1/5 focus:outline-none focus:ring-2 focus:ring-red-400"
+          className="shadow-md shadow-gray-400 rounded px-2 py-1 w-full sm:w-1/5 focus:outline-none focus:ring-2 focus:ring-red-400"
         />
 
         {/* Date & Time Inputs */}
@@ -181,7 +226,7 @@ const CreateMatch = () => {
               type="date"
               value={matchDate}
               onChange={(e) => setMatchDate(e.target.value)}
-              className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="shadow-md shadow-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>
 
@@ -193,7 +238,7 @@ const CreateMatch = () => {
               type="time"
               value={matchTime}
               onChange={(e) => setMatchTime(e.target.value)}
-              className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="shadow-md shadow-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>
 
@@ -207,7 +252,7 @@ const CreateMatch = () => {
               max={300}
               value={matchDuration}
               onChange={(e) => setMatchDuration(parseInt(e.target.value))}
-              className="border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="shadow-md shadow-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>
         </div>
@@ -220,33 +265,33 @@ const CreateMatch = () => {
           placeholder="Search players..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border rounded px-3 py-2 w-full sm:w-2/3 focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="shadow-md shadow-gray-400 rounded px-3 py-2 w-full sm:w-2/3 focus:outline-none focus:ring-2 focus:ring-green-400"
         />
         <button
           onClick={handleCreateMatch}
           disabled={loading}
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+          className="bg-green-600 shadow-md shadow-gray-400 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-50 hover:scale-[1.02]"
         >
           {loading ? "Creating..." : "Create Match"}
         </button>
       </div>
 
-      {/* Player Pool and Teams */}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Available Players */}
+       
         <div className="bg-gray-50 p-4 rounded shadow min-h-[400px] max-h-[500px] overflow-y-auto">
-          <h3 className="font-semibold mb-2">Available Players</h3>
-          {availablePlayers.length === 0 && (
+          <h3 className="font-semibold p-2 bg-gradient-to-r sticky -top-4 rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">Available Players</h3>
+          {loadingp?<Loading/>:availablePlayers.length === 0 ? 
             <p className="text-gray-400">No players available</p>
-          )}
-          {availablePlayers.map((p) => (
+          
+          :availablePlayers.map((p) => (
             <PlayerCard key={p._id} player={p} />
           ))}
         </div>
 
         {/* Team A */}
-        <div className="bg-blue-50 p-4 rounded shadow min-h-[400px]">
-          <h3 className="font-semibold mb-2">
+        <div className="bg-gray-50 p-4 rounded shadow min-h-[400px]">
+          <h3 className="font-semibold p-2 bg-gradient-to-r sticky -top-4 rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">
             {teamAName} ({teamA.length}/{teamSize})
           </h3>
           {teamA.map((p) => (
@@ -259,8 +304,8 @@ const CreateMatch = () => {
         </div>
 
         {/* Team B */}
-        <div className="bg-red-50 p-4 rounded shadow min-h-[400px]">
-          <h3 className="font-semibold mb-2">
+        <div className="bg-gray-50 p-4 rounded shadow min-h-[400px]">
+            <h3 className="font-semibold p-2 bg-gradient-to-r sticky -top-4 rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">
             {teamBName} ({teamB.length}/{teamSize})
           </h3>
           {teamB.map((p) => (
@@ -294,22 +339,22 @@ const CreateMatch = () => {
               <div className="flex gap-4 w-full">
                 <button
                   onClick={() => addPlayerToTeam(selectedPlayer, "A")}
-                  className="flex-1 bg-gradient-to-r from-blue-400 to-blue-600 text-white font-semibold py-2 rounded-xl shadow hover:from-blue-500 hover:to-blue-700 transition-all"
+                  className="flex-1 bg-gradient-to-r  rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white font-semibold py-2 rounded-xl shadow hover:from-blue-500 hover:to-blue-700 transition-all"
                 >
                   Add to {teamAName}
                 </button>
                 <button
                   onClick={() => addPlayerToTeam(selectedPlayer, "B")}
-                  className="flex-1 bg-gradient-to-r from-red-400 to-red-600 text-white font-semibold py-2 rounded-xl shadow hover:from-red-500 hover:to-red-700 transition-all"
+                  className="flex-1 bg-gradient-to-r  rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white font-semibold py-2 rounded-xl shadow hover:from-red-500 hover:to-red-700 transition-all"
                 >
                   Add to {teamBName}
                 </button>
               </div>
               <button
                 onClick={() => setModalOpen(false)}
-                className="mt-6 text-gray-500 hover:text-gray-800 font-medium transition-colors"
+                className="mt-6 text-red-500  hover:text-red-800 font-medium transition-colors"
               >
-                Cancel
+               X Cancel
               </button>
             </div>
           </div>

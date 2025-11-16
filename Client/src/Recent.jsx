@@ -123,7 +123,7 @@ const Recent = () => {
 
       <div className="grid md:grid-cols-2 gap-6">
   
-        <div className="border p-4 rounded-lg shadow-md shadow-white">
+        <div className="border p-4 rounded-lg shadow-lg shadow-white">
           <h4 className="font-semibold mb-3 text-center">{selectedMatch.teamAName}</h4>
           <div className="text-sm space-y-1">
             <p>Goals Scored: {selectedMatch.stats?.teamAGoals ?? 0}</p>

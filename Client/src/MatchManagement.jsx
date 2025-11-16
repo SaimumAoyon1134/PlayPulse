@@ -124,10 +124,16 @@ const MatchManagement = ({ match, goBack }) => {
     setSaving(true);
     const res = await persistStats();
     if (res && res.success) {
-      alert("Stats saved.");
+       Toast.fire({
+            icon: "success",
+            title: `Match Stat Saved.`,
+          });
       if (fetchMatches) await fetchMatches();
     } else {
-      alert("Failed to save stats (see console).");
+       Toast.fire({
+            icon: "error",
+            title: `Same Erorr Faced`,
+          });
     }
     setSaving(false);
   };
@@ -146,15 +152,24 @@ const MatchManagement = ({ match, goBack }) => {
       });
       const data = await res.json();
       if (data.success) {
-        alert("Match ended.");
+        Toast.fire({
+            icon: "success",
+            title: `Match Ended.`,
+          });
         if (fetchMatches) await fetchMatches();
         if (goBack) goBack();
       } else {
-        alert("Failed to end match.");
+         Toast.fire({
+            icon: "error",
+            title: `Error.`,
+          });
       }
     } catch (err) {
       console.error("End match error:", err);
-      alert("Error ending match.");
+      Toast.fire({
+            icon: "error",
+            title: `Error.`,
+          });
     } finally {
       setEnding(false);
     }
@@ -177,21 +192,21 @@ const MatchManagement = ({ match, goBack }) => {
         <h2 className="text-2xl font-bold text-gray-800">
           {match.teamAName} vs {match.teamBName}
         </h2>
-        <p className="text-sm text-gray-500">
+        {/* <p className="text-sm text-gray-500">
           {match.matchDate} — {match.matchTime} ({match.matchDuration} min)
-        </p>
+        </p> */}
         <p className="mt-1 text-sm text-gray-700">
           <strong>Score:</strong> {teamTotals.teamAScore} — {teamTotals.teamBScore}
         </p>
       </div>
 
       <div className="flex gap-2">
-        <button
+        {/* <button
           onClick={goBack}
           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 shadow"
         >
           ← Close
-        </button>
+        </button> */}
         <button
           onClick={handleSave}
           disabled={saving}
@@ -199,7 +214,7 @@ const MatchManagement = ({ match, goBack }) => {
             saving ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
           }`}
         >
-          {saving ? "Saving..." : "Save"}
+          {saving ? "Saving..." : "Save Match"}
         </button>
         <button
           onClick={handleEnd}
@@ -217,8 +232,8 @@ const MatchManagement = ({ match, goBack }) => {
     <div className="flex-1 overflow-y-auto p-4 space-y-6">
       <div className="grid md:grid-cols-2 gap-6">
         {/* Team A */}
-        <div className="bg-white border rounded-lg shadow-md p-4">
-          <h4 className="font-semibold text-lg mb-3">{match.teamAName} — Players</h4>
+        <div className="bg-white shadow-gray-300 rounded-lg shadow-md p-4 ">
+          <h4 className="font-semibold text-lg mb-3 bg-gradient-to-r text-center rounded-2xl shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white">{match.teamAName} — Players</h4>
           <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
             {(match.teamA || []).map((p) => {
               const player = getPlayerObj(p);
@@ -266,8 +281,8 @@ const MatchManagement = ({ match, goBack }) => {
         </div>
 
         {/* Team B */}
-        <div className="bg-white border rounded-lg shadow-md p-4">
-          <h4 className="font-semibold text-lg mb-3">{match.teamBName} — Players</h4>
+        <div className="bg-white shadow-gray-300 rounded-lg shadow-md p-4">
+          <h4 className="font-semibold text-lg mb-3 bg-gradient-to-r  rounded-2xl shadow-md text-center  shadow-blue-300 from-blue-600 to-purple-600 text-white">{match.teamBName} — Players</h4>
           <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
             {(match.teamB || []).map((p) => {
               const player = getPlayerObj(p);
@@ -291,19 +306,19 @@ const MatchManagement = ({ match, goBack }) => {
                   <div className="flex gap-1">
                     <button
                       onClick={() => handlePlayerAction(id, "goals")}
-                      className="px-2 py-1 text-sm rounded bg-green-600 text-white hover:bg-green-700"
+                      className="px-2 py-1 text-sm rounded bg-green-600 text-white shadow-md shadow-gray-300 hover:bg-green-700"
                     >
                       +Goal
                     </button>
                     <button
                       onClick={() => handlePlayerAction(id, "assists")}
-                      className="px-2 py-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+                      className="px-2 py-1 text-sm rounded bg-blue-600 text-white shadow-md shadow-gray-300 hover:bg-blue-700"
                     >
                       +Assist
                     </button>
                     <button
                       onClick={() => handlePlayerAction(id, "fouls")}
-                      className="px-2 py-1 text-sm rounded bg-yellow-500 text-white hover:bg-yellow-600"
+                      className="px-2 py-1 text-sm rounded bg-yellow-500 text-white shadow-md shadow-gray-300 hover:bg-yellow-600"
                     >
                       +Foul
                     </button>
@@ -317,8 +332,8 @@ const MatchManagement = ({ match, goBack }) => {
     </div>
 
     {/* Summary bar */}
-    <div className="bg-white shadow-inner p-4 border-t sticky bottom-0 z-10">
-      <div className="flex justify-between text-sm font-medium text-gray-800">
+    <div className="bg-gradient-to-r   shadow-md shadow-blue-300 from-blue-600 to-purple-600 text-white shadow-inner p-4 border-t sticky bottom-0 z-10">
+      <div className="flex justify-between text-sm font-medium ">
         <div>
           <strong>{match.teamAName}</strong> — Score: {teamTotals.teamAScore} | Goals: {teamTotals.teamAGoals} | Fouls: {teamTotals.teamAFouls}
         </div>

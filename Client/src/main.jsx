@@ -20,6 +20,7 @@ import AdminMatchTable from "./AdminMatchTable.jsx";
 import OnGoingMatch from "./OnGoingMatch.jsx";
 import MatchManagement from "./MatchManagement.jsx";
 import MyLive from "./MyLive.jsx";
+import UpdateProfile from "./UpdateProfile.jsx";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
       { path: "/ongoingmatch", element: <OnGoingMatch /> },
       { path: "/match/:id", element: <MatchManagement /> },
       { path: "/mylive", element: <MyLive/> },
+      { path: "/update", element: <UpdateProfile/> },
     ],
   },
 ]);

@@ -17,44 +17,106 @@ const Register = () => {
       navigate("/");
     };
   const [showPassword, setShowPassword] = useState(false); 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(null);
+  setSuccess(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(false);
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const name = e.target.name.value;
-    const image = e.target.image.value;
-    
-    if (!email || !password) {
-      setError("Please give email and password!!");
-      return;
+  const email = e.target.email.value;
+  const password = e.target.password.value;
+  const name = e.target.name.value;
+  const image = e.target.image.value;
+
+  if (!email || !password) {
+    setError("Please provide email and password!!");
+    return;
+  }
+
+  if (!passwordRegex.test(password)) {
+    setError(
+      "Password must contain at least one uppercase letter, one lowercase letter, and be 6+ characters long."
+    );
+    return;
+  }
+
+  try {
+ 
+    const result = await signUp(email, password);
+    setSuccess(true);
+
+   
+    if (name || image) {
+      await update(name, image);
     }
-      if (!passwordRegex.test(password)) {
-        setError(
-          "Password must contain at least one uppercase letter, one lowercase letter, and be 6+ characters long."
-        );
-        return;
-      }
 
-    signUp(email, password)
-      .then((result) => {
-        console.log("ok");
-        setSuccess(true);
-        if (name || image) {
-          update(name, image);
-        }
-        e.target.reset();
-        navigate("/");
+    
+    const playerData = {
+      name: name || "Anonymous",
+      avatar: image || "",
+      category: "User", 
+      stats: {
+        goals: 0,
+        assists: 0,
+        penalties: 0,
+        fouls: 0,
+        wins: 0,
+        losses: 0,
+      },
+      email: email,
+      createdAt: new Date().toISOString(),
+    };
 
-      })
-      .catch((error) => {
-        setError("Please Set Properly");
-      });
+    await fetch("http://localhost:3000/players", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(playerData),
+    });
+
+    e.target.reset();
+    navigate("/"); 
+  } catch (err) {
+    console.error(err);
+    setError("Something went wrong. Please try again.");
+  }
+};
+  // const handleSubmit = (e) => {
+
+  //   e.preventDefault();
+  //   setError(null);
+  //   setSuccess(false);
+  //   const email = e.target.email.value;
+  //   const password = e.target.password.value;
+  //   const name = e.target.name.value;
+  //   const image = e.target.image.value;
+    
+  //   if (!email || !password) {
+  //     setError("Please give email and password!!");
+  //     return;
+  //   }
+  //     if (!passwordRegex.test(password)) {
+  //       setError(
+  //         "Password must contain at least one uppercase letter, one lowercase letter, and be 6+ characters long."
+  //       );
+  //       return;
+  //     }
+
+  //   signUp(email, password)
+  //     .then((result) => {
+  //       console.log("ok");
+  //       setSuccess(true);
+  //       if (name || image) {
+  //         update(name, image);
+  //       }
+  //       e.target.reset();
+  //       navigate("/");
+
+  //     })
+  //     .catch((error) => {
+  //       setError("Please Set Properly");
+  //     });
       
     
-  };
+  // };
   return (
     <div className=" animate__animated animate__fadeInDown">
       <h1 className="mt-4 font-bold text-2 text-center flex justify-center"> <span>Sign up to </span><img className="w-[40px] h-[40px]  " src={image} alt="" /><span>Play Pulse</span></h1>

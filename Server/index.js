@@ -30,8 +30,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PATCH"]
-  }
+    methods: ["GET", "POST", "PATCH"],
+  },
 });
 
 io.on("connection", (socket) => {
@@ -432,6 +432,30 @@ async function run() {
         res.status(500).json({ message: "Failed to add player" });
       }
     });
+    app.put("/players/:uid", async (req, res) => {
+      try {
+        const { uid } = req.params;
+        const { name, avatar } = req.body;
+
+        const updateDoc = {
+          $set: { name, avatar },
+        };
+
+        const result = await playersCollection.updateOne(
+          { _id: uid },
+          updateDoc
+        );
+
+        if (result.matchedCount === 0)
+          return res.status(404).json({ message: "Player not found" });
+
+        const updatedPlayer = await playersCollection.findOne({ _id: uid });
+        res.json(updatedPlayer);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to update player" });
+      }
+    });
 
     // In your server file (e.g., api/index.js or routes/bookings.js)
     app.get("/admin/bookings", async (req, res) => {
@@ -562,127 +586,132 @@ async function run() {
       }
     });
 
+    app.patch("/matches/start/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const now = new Date();
+        const io = req.app.get("io");
 
-app.patch("/matches/start/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const now = new Date();
-    const io = req.app.get("io");
-
-    const result = await matchesCollection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          isLive: true,
-          isFinished: false,
-          matchDateTime: now,
-        },
-      }
-    );
-
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ success: false, message: "Match not found" });
-    }
-
-    const updatedMatch = await matchesCollection.findOne({ _id: new ObjectId(id) });
-    io.emit("match-start", updatedMatch);
-
-    res.json({ success: true, message: "Match started" });
-  } catch (err) {
-    console.error("Start match error:", err);
-    res.status(500).json({ success: false, message: "Failed to start match" });
-  }
-});
-
-
-
-app.patch("/matches/:id/end", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const io = req.app.get("io");
-
-    await matchesCollection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          isLive: false,
-          isFinished: true,
-        },
-      }
-    );
-
-    const endedMatch = await matchesCollection.findOne({ _id: new ObjectId(id) });
-    io.emit("match-end", endedMatch);
-
-    res.json({ success: true, message: "Match ended" });
-
-  } catch (err) {
-    console.error("End match error:", err);
-    res.status(500).json({ success: false, message: "Failed to end match" });
-  }
-});
-
-
-
-app.patch("/matches/:id/stats", async (req, res) => {
-  try {
-    const matchId = req.params.id;
-    const { stats, playerStats } = req.body;
-    const io = req.app.get("io");
-
-    if (!stats) {
-      return res.status(400).json({
-        success: false,
-        message: "Match stats missing",
-      });
-    }
-
-    // Update MATCH stats
-    await matchesCollection.updateOne(
-      { _id: new ObjectId(matchId) },
-      {
-        $set: {
-          stats,
-          updatedAt: new Date(),
-        },
-      }
-    );
-
-    // Update PLAYER stats
-    if (playerStats && typeof playerStats === "object") {
-      for (const playerId in playerStats) {
-        const ps = playerStats[playerId];
-
-        await playersCollection.updateOne(
-          { _id: new ObjectId(playerId) },
+        const result = await matchesCollection.updateOne(
+          { _id: new ObjectId(id) },
           {
-            $inc: {
-              "stats.goals": ps.goals || 0,
-              "stats.assists": ps.assists || 0,
-              "stats.fouls": ps.fouls || 0,
+            $set: {
+              isLive: true,
+              isFinished: false,
+              matchDateTime: now,
             },
           }
         );
+
+        if (result.modifiedCount === 0) {
+          return res
+            .status(404)
+            .json({ success: false, message: "Match not found" });
+        }
+
+        const updatedMatch = await matchesCollection.findOne({
+          _id: new ObjectId(id),
+        });
+        io.emit("match-start", updatedMatch);
+
+        res.json({ success: true, message: "Match started" });
+      } catch (err) {
+        console.error("Start match error:", err);
+        res
+          .status(500)
+          .json({ success: false, message: "Failed to start match" });
       }
-    }
-
-    const updatedMatch = await matchesCollection.findOne({
-      _id: new ObjectId(matchId),
     });
 
-    io.emit("match-update", updatedMatch);
+    app.patch("/matches/:id/end", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const io = req.app.get("io");
 
-    return res.json({
-      success: true,
-      message: "Stats updated successfully",
-      match: updatedMatch,
+        await matchesCollection.updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              isLive: false,
+              isFinished: true,
+            },
+          }
+        );
+
+        const endedMatch = await matchesCollection.findOne({
+          _id: new ObjectId(id),
+        });
+        io.emit("match-end", endedMatch);
+
+        res.json({ success: true, message: "Match ended" });
+      } catch (err) {
+        console.error("End match error:", err);
+        res
+          .status(500)
+          .json({ success: false, message: "Failed to end match" });
+      }
     });
 
-  } catch (err) {
-    console.error("PATCH /matches/:id/stats ERROR:", err);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
-});
+    app.patch("/matches/:id/stats", async (req, res) => {
+      try {
+        const matchId = req.params.id;
+        const { stats, playerStats } = req.body;
+        const io = req.app.get("io");
+
+        if (!stats) {
+          return res.status(400).json({
+            success: false,
+            message: "Match stats missing",
+          });
+        }
+
+        // Update MATCH stats
+        await matchesCollection.updateOne(
+          { _id: new ObjectId(matchId) },
+          {
+            $set: {
+              stats,
+              updatedAt: new Date(),
+            },
+          }
+        );
+
+        // Update PLAYER stats
+        if (playerStats && typeof playerStats === "object") {
+          for (const playerId in playerStats) {
+            const ps = playerStats[playerId];
+
+            await playersCollection.updateOne(
+              { _id: new ObjectId(playerId) },
+              {
+                $inc: {
+                  "stats.goals": ps.goals || 0,
+                  "stats.assists": ps.assists || 0,
+                  "stats.fouls": ps.fouls || 0,
+                },
+              }
+            );
+          }
+        }
+
+        const updatedMatch = await matchesCollection.findOne({
+          _id: new ObjectId(matchId),
+        });
+
+        io.emit("match-update", updatedMatch);
+
+        return res.json({
+          success: true,
+          message: "Stats updated successfully",
+          match: updatedMatch,
+        });
+      } catch (err) {
+        console.error("PATCH /matches/:id/stats ERROR:", err);
+        res
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    });
   } finally {
   }
 }

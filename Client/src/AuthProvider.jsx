@@ -25,15 +25,13 @@ const AuthProvider = ({ children }) => {
 
   const socketRef = useRef(null);
 
-  // --------------------------
-  // SOCKET.IO SETUP
-  // --------------------------
+
   useEffect(() => {
-    // Connect socket
+    
     socketRef.current = io("http://localhost:3000", { transports: ["websocket"] });
     const socket = socketRef.current;
 
-    // Match started
+    
     socket.on("match-start", (match) => {
       setLive((prev) => [...prev, match]);
       setUpcoming((prev) => prev.filter((m) => m._id !== match._id));
@@ -96,13 +94,13 @@ const AuthProvider = ({ children }) => {
       console.error("Failed to fetch matches:", err);
     }
      finally {
-    // setIsLoading(false); 
+    
   }
   };
 
   useEffect(() => {
     fetchMatches();
-    const interval = setInterval(fetchMatches, 1000); 
+    const interval = setInterval(fetchMatches, 500); 
     return () => clearInterval(interval);
   }, []);
 
@@ -164,6 +162,7 @@ const AuthProvider = ({ children }) => {
     recent,
     fetchMatches,
     players,
+    setUpcoming,
   };
 
   return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
