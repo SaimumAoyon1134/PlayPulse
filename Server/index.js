@@ -4,18 +4,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-
-const app = express();
-
-const port = process.env.PORT || 3000;
 const http = require("http");
 const { Server } = require("socket.io");
 
+const app = express();
+const port = process.env.PORT || 3000;
+
+// MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
+// MONGO
 const uri = process.env.MONGO_URI;
-console.log(uri)
+console.log(uri);
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -23,12 +25,14 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
+// CREATE HTTP SERVER (REQUIRED for WebSockets)
 const server = http.createServer(app);
 
-// SOCKET
+// SOCKET.IO
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all for Cloud Run, change to frontend URL in production
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -41,7 +45,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Make socket accessible
+// expose socket
 app.set("io", io);
 
 // Start server
@@ -51,7 +55,7 @@ app.set("io", io);
 
 async function run() {
   try {
-    // await client.connect();
+    await client.connect();
 
     // await client.db("admin").command({ ping: 1 });
     // console.log(
@@ -717,6 +721,6 @@ async function run() {
 
 run().catch(console.dir);
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });

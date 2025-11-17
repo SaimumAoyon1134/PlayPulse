@@ -43,7 +43,7 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3000", {
+    socketRef.current = io("https://playpulse-production.up.railway.app", {
       transports: ["websocket"],
     });
     const socket = socketRef.current;

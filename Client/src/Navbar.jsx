@@ -13,16 +13,17 @@ import CampaignIcon from "@mui/icons-material/Campaign";
 import AddIcon from "@mui/icons-material/Add";
 import GroupIcon from "@mui/icons-material/Group";
 import Groups3Icon from "@mui/icons-material/Groups3";
-import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 
 const Navbar = () => {
   const active =
     "  underline text-white rounded-md font-extrabold transition  scale-[1.1] duration-300";
   const inActive =
     " text-gray-100 rounded-md font-extrabold transition duration-300";
-  const { user, logOut, isLoading } = useContext(AuthContext);
+  const { user, logOut, isLoading, live, upcoming } = useContext(AuthContext);
   const navigate = useNavigate();
-  console.log(user?.email);
+  console.log(live.length);
+  console.log(upcoming.length);
 
   const onClickLogin = () => {
     navigate("/login");
@@ -65,20 +66,20 @@ const Navbar = () => {
           🧾 Booking History
         </NavLink>
       </li>
-      <li>
+      {/* <li>
         <NavLink
           to="/manage-announcement"
           className={({ isActive }) => (isActive ? active : inActive)}
         >
           <CampaignIcon /> Announcement
         </NavLink>
-      </li>
+      </li> */}
       <li>
         <NavLink
           to="/adminmatchtable"
           className={({ isActive }) => (isActive ? active : inActive)}
         >
-          <Groups3Icon/> Matches
+          <Groups3Icon /> Matches
         </NavLink>
       </li>
     </>
@@ -136,27 +137,42 @@ const Navbar = () => {
           </NavLink>
         </li>
       )}
-         {user && (
+      {user && (
         <li>
           <NavLink
             to="/ongoingmatch"
             className={({ isActive }) => (isActive ? active : inActive)}
           >
-            <AutoAwesomeMotionIcon/>
+            <AutoAwesomeMotionIcon />
             Waiting Match
+            {upcoming?.length > 0 && (
+              <span className="bg-red-500 text-white w-5 h-5 text-center -top-2 sticky rounded-full">
+                {upcoming.length}
+              </span>
+            )}
           </NavLink>
         </li>
       )}
       {user && (
-        <li>
-          <NavLink
-            to="/mylive"
-            className={({ isActive }) => (isActive ? active : inActive)}
-          >
-            <AutoAwesomeMotionIcon/>
-            Live Match
-          </NavLink>
-        </li>
+       <li>
+  <NavLink
+    to="/mylive"
+    className={({ isActive }) =>
+      `${isActive ? active : inActive} relative` // <-- make the container a positioned parent
+    }
+  >
+    <AutoAwesomeMotionIcon />
+    Live Match
+    {live?.length > 0 && (
+      <span
+        className="absolute -top-2 -right-1 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs"
+        aria-hidden="true"
+      >
+        {live.length}
+      </span>
+    )}
+  </NavLink>
+</li>
       )}
     </>
   );

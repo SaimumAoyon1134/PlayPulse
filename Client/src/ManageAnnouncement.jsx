@@ -12,7 +12,7 @@ const ManageAnnouncement = () => {
         const res = await fetch(
           "https://playpulse-production.up.railway.app/announcement"
         );
-        const data = await res.json();
+        const data = await res.json()
         setAnnouncements(data);
       } catch (err) {
         console.error("Error fetching announcements:", err);
