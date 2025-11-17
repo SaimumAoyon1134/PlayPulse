@@ -7,3 +7,5 @@ const Footer = () => {
 }
 
 export default Footer
+
+//this is the foorter component
