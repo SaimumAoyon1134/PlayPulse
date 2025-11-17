@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
+import Swal from "sweetalert2";
 
 const MatchManagement = ({ match, goBack }) => {
   const { players = [], fetchMatches } = useContext(AuthContext);
@@ -16,7 +17,17 @@ const MatchManagement = ({ match, goBack }) => {
   });
   const [saving, setSaving] = useState(false);
   const [ending, setEnding] = useState(false);
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+  });
   const playerById = {};
   players.forEach((p) => {
     playerById[String(p._id)] = p;
@@ -133,6 +144,7 @@ const MatchManagement = ({ match, goBack }) => {
         icon: "success",
         title: `Match Stat Saved.`,
       });
+      setSaving(false);
       if (fetchMatches) await fetchMatches();
     } else {
       Toast.fire({
@@ -164,6 +176,7 @@ const MatchManagement = ({ match, goBack }) => {
           icon: "success",
           title: `Match Ended.`,
         });
+            setEnding(false);
         if (fetchMatches) await fetchMatches();
         if (goBack) goBack();
       } else {
@@ -210,12 +223,12 @@ const MatchManagement = ({ match, goBack }) => {
         </div>
 
         <div className="flex gap-2">
-          {/* <button
+          <button
           onClick={goBack}
           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 shadow"
         >
           ← Close
-        </button> */}
+        </button>
           <button
             onClick={handleSave}
             disabled={saving}
