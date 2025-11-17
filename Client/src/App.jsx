@@ -13,7 +13,7 @@ import image from "./image copy.png";
 
 
 function App() {
-  const [activeTab, setActiveTab] = useState("live");
+  const [activeTab, setActiveTab] = useState("recent");
   const location = useLocation();
   const [showSpinner, setShowSpinner] = useState(false);
   const { isLoading } = useContext(AuthContext);
