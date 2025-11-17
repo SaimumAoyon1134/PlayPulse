@@ -230,7 +230,7 @@ const CreateMatch = () => {
             <input
               type="time"
               value={matchTime}
-              onChange={(e) => setMatchTime(e.target.value)}
+              onChange={(e) => setMatchTime(e.target.value)}//specifilly set the time to play
               className="shadow-md shadow-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>
